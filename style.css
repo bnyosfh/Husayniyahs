@@ -85,7 +85,6 @@ h1 {
 .majlis-name-wrapper.active + .majlis-details {
     padding-bottom: 20px;
 }
-
 .details-item {
     background-color: #e9ecef;
     border-radius: 10px;
@@ -113,6 +112,12 @@ h1 {
     font-weight: bold;
     transition: all 0.3s ease;
 }
+
+/* فئة جديدة لتوسيط محتوى الخطيب عند فتح القائمة */
+.preacher-info.centered-preacher {
+    justify-content: center;
+}
+
 .preacher-info img {
     width: 50px;
     height: 50px;
@@ -129,6 +134,12 @@ h1 {
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     transition: all 0.3s ease;
 }
+
+/* قاعدة جديدة لإخفاء صندوق الوقت عند تفعيل القائمة */
+.preacher-info.centered-preacher + .time-box {
+    display: none;
+}
+
 .location-icon {
     font-size: 1.5em;
     color: #007bff;
