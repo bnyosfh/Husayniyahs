@@ -80,18 +80,6 @@
             const now = new Date();
             const nowInMinutes = now.getHours() * 60 + now.getMinutes();
 
-            data.forEach(item => {
-                const sessionTime = parseTime(item.time);
-                const sessionTimeInMinutes = sessionTime.getHours() * 60 + sessionTime.getMinutes();
-                const difference = sessionTimeInMinutes - nowInMinutes;
-                
-                if (difference > -30 && difference < 30) { 
-                    item.status = "تقرأ الآن";
-                } else {
-                    item.status = "قريباً";
-                }
-            });
-
             const groupedData = data.reduce((acc, item) => {
                 if (!acc[item.majlis_name]) {
                     acc[item.majlis_name] = {
@@ -104,17 +92,12 @@
                 acc[item.majlis_name].sessions.push({
                     speaker: item.speaker,
                     time: item.time,
-                    status: item.status,
                     preacher_photo_url: item.preacher_photo_url
                 });
                 return acc;
             }, {});
 
-            const sortedData = Object.values(groupedData).sort((a, b) => {
-                if (a.sessions.some(s => s.status === "تقرأ الآن")) return -1;
-                if (b.sessions.some(s => b.status === "تقرأ الآن")) return 1;
-                return 0;
-            });
+            const sortedData = Object.values(groupedData);
 
             listContainer.innerHTML = ''; 
 
@@ -124,16 +107,6 @@
 
                 const nameWrapper = document.createElement('div');
                 nameWrapper.classList.add('majlis-name-wrapper');
-
-                const statusSpan = document.createElement('span');
-                statusSpan.classList.add('status');
-                if (item.sessions.some(s => s.status === "تقرأ الآن")) {
-                    statusSpan.textContent = "تقرأ الآن";
-                    statusSpan.classList.add('current');
-                } else {
-                    statusSpan.textContent = "قريباً";
-                    statusSpan.classList.add('upcoming');
-                }
                 
                 const textWrapper = document.createElement('div');
                 const nameDiv = document.createElement('div');
@@ -147,9 +120,11 @@
                 textWrapper.appendChild(nameDiv);
                 textWrapper.appendChild(locationDiv);
                 
-                const arrowSpan = document.createElement('span');
-                arrowSpan.classList.add('arrow');
-                arrowSpan.textContent = '▼';
+                const arrowSvg = `
+                    <svg class="arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 8L12 12L16 16" stroke="#6c757d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                `;
 
                 const locationIcon = `
                     <a href="${item.location_url}" target="_blank" style="text-decoration: none;">
@@ -159,9 +134,13 @@
                     </a>
                 `;
 
-                nameWrapper.appendChild(statusSpan);
+                const iconsWrapper = document.createElement('div');
+                iconsWrapper.classList.add('icons-wrapper');
+                iconsWrapper.insertAdjacentHTML('afterbegin', locationIcon);
+                iconsWrapper.insertAdjacentHTML('beforeend', arrowSvg);
+
                 nameWrapper.appendChild(textWrapper);
-                nameWrapper.appendChild(arrowSpan);
+                nameWrapper.appendChild(iconsWrapper);
 
                 const detailsDiv = document.createElement('div');
                 detailsDiv.classList.add('majlis-details');
@@ -188,47 +167,41 @@
                 itemDiv.appendChild(detailsDiv);
                 listContainer.appendChild(itemDiv);
                 
-                // منطق فتح/إغلاق قائمة المجالس الرئيسية
                 nameWrapper.addEventListener('click', () => {
                     const isActive = nameWrapper.classList.toggle('active');
                     detailsDiv.style.maxHeight = isActive ? detailsDiv.scrollHeight + "px" : null;
-                    statusSpan.classList.toggle('visible', !isActive);
+                    const arrowElement = nameWrapper.querySelector('.arrow');
                     if (isActive) {
-                        nameWrapper.insertAdjacentHTML('afterbegin', locationIcon);
+                        arrowElement.classList.add('open');
                     } else {
-                        const existingIcon = nameWrapper.querySelector('.location-icon');
-                        if (existingIcon) {
-                            existingIcon.parentElement.remove();
-                        }
+                        arrowElement.classList.remove('open');
                     }
                 });
 
-                // منطق فتح/إغلاق قائمة الخطيب
                 detailsDiv.querySelectorAll('.details-item').forEach(speakerItem => {
                     speakerItem.addEventListener('click', (event) => {
-                        event.stopPropagation(); // يمنع الحدث من الوصول للقائمة الرئيسية
+                        event.stopPropagation();
                         const speakerName = speakerItem.getAttribute('data-speaker-name');
                         const speakerDetailsDiv = speakerItem.nextElementSibling;
                         const preacherInfo = speakerItem.querySelector('.preacher-info');
+                        const parentDetailsDiv = speakerItem.closest('.majlis-details');
                         
                         const isActive = speakerDetailsDiv.classList.toggle('active');
                         speakerItem.classList.toggle('active');
                         preacherInfo.classList.toggle('centered-preacher');
                         
                         if (isActive) {
-                            displaySpeakerSchedule(speakerName, speakerDetailsDiv, speakerItem);
+                             displaySpeakerSchedule(speakerName, speakerDetailsDiv, speakerItem, parentDetailsDiv);
                         } else {
                             speakerDetailsDiv.style.maxHeight = '0';
                             speakerDetailsDiv.innerHTML = '';
                         }
                     });
                 });
-                
-                statusSpan.classList.add('visible');
             });
         }
 
-        function displaySpeakerSchedule(speakerName, containerDiv, speakerItem) {
+        function displaySpeakerSchedule(speakerName, containerDiv, speakerItem, parentDetailsDiv) {
             const speakerSessions = allSessionsData.filter(session => session.speaker === speakerName);
 
             let scheduleHTML = '';
@@ -246,7 +219,6 @@
             containerDiv.innerHTML = scheduleHTML;
             containerDiv.style.maxHeight = containerDiv.scrollHeight + 'px';
 
-            const parentDetailsDiv = containerDiv.closest('.majlis-details');
             if (parentDetailsDiv) {
                  parentDetailsDiv.style.maxHeight = parentDetailsDiv.scrollHeight + containerDiv.scrollHeight + "px";
             }
