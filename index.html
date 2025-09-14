@@ -187,14 +187,8 @@
                 itemDiv.appendChild(nameWrapper);
                 itemDiv.appendChild(detailsDiv);
                 listContainer.appendChild(itemDiv);
-
-                const recalculateParentHeight = () => {
-                    const parentContainer = detailsDiv;
-                    if (parentContainer.classList.contains('active')) {
-                        parentContainer.style.maxHeight = parentContainer.scrollHeight + "px";
-                    }
-                };
-
+                
+                // منطق فتح/إغلاق قائمة المجالس الرئيسية
                 nameWrapper.addEventListener('click', () => {
                     const isActive = nameWrapper.classList.toggle('active');
                     detailsDiv.style.maxHeight = isActive ? detailsDiv.scrollHeight + "px" : null;
@@ -209,31 +203,24 @@
                     }
                 });
 
+                // منطق فتح/إغلاق قائمة الخطيب
                 detailsDiv.querySelectorAll('.details-item').forEach(speakerItem => {
                     speakerItem.addEventListener('click', (event) => {
-                        event.stopPropagation();
+                        event.stopPropagation(); // يمنع الحدث من الوصول للقائمة الرئيسية
                         const speakerName = speakerItem.getAttribute('data-speaker-name');
                         const speakerDetailsDiv = speakerItem.nextElementSibling;
-                        const speakerCardContent = speakerItem.querySelector('.preacher-info');
-                        const timeBox = speakerItem.querySelector('.time-box');
-
+                        const preacherInfo = speakerItem.querySelector('.preacher-info');
+                        
                         const isActive = speakerDetailsDiv.classList.toggle('active');
                         speakerItem.classList.toggle('active');
-
+                        preacherInfo.classList.toggle('centered-preacher');
+                        
                         if (isActive) {
-                            timeBox.style.display = 'none';
-                            speakerCardContent.style.justifyContent = 'center';
                             displaySpeakerSchedule(speakerName, speakerDetailsDiv, speakerItem);
                         } else {
                             speakerDetailsDiv.style.maxHeight = '0';
                             speakerDetailsDiv.innerHTML = '';
-                            
-                            // إعادة الخصائص إلى حالتها الأصلية
-                            timeBox.style.display = 'block';
-                            speakerCardContent.style.justifyContent = 'space-between';
                         }
-                        
-                        recalculateParentHeight();
                     });
                 });
                 
@@ -261,7 +248,7 @@
 
             const parentDetailsDiv = containerDiv.closest('.majlis-details');
             if (parentDetailsDiv) {
-                parentDetailsDiv.style.maxHeight = parentDetailsDiv.scrollHeight + containerDiv.scrollHeight + "px";
+                 parentDetailsDiv.style.maxHeight = parentDetailsDiv.scrollHeight + containerDiv.scrollHeight + "px";
             }
         }
 
