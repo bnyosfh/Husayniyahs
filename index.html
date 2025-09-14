@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قائمة الحسينيات</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .husayniyah-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+            cursor: pointer;
+        }
+        .husayniyah-item:last-child {
+            border-bottom: none;
+        }
+        .husayniyah-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #555;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .husayniyah-name::after {
+            content: '▼';
+            transition: transform 0.3s ease;
+        }
+        .husayniyah-name.active::after {
+            transform: rotate(-180deg);
+        }
+        .husayniyah-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            padding-top: 10px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>قائمة الحسينيات</h1>
+        <div id="husayniyahs-list">
+            </div>
+    </div>
+
+    <script>
+        // هذا مجرد مثال على البيانات. ستقوم لاحقًا باستبداله ببيانات Google Sheet
+        const husayniyahsData = [
+            {
+                name: "حسينية الإمام علي (ع)",
+                location: "المنطقة الشرقية",
+                status: "تقرأ الآن",
+                speaker: "الشيخ فلان الفلاني",
+                schedule: "كل يوم الساعة 7:30 مساءً"
+            },
+            {
+                name: "حسينية الإمام الحسين (ع)",
+                location: "المنطقة الشرقية",
+                status: "قريباً",
+                speaker: "السيد فلان",
+                schedule: "كل يوم الساعة 8:00 مساءً"
+            },
+            {
+                name: "حسينية الزهراء (ع)",
+                location: "المنطقة الشرقية",
+                status: "قريباً",
+                speaker: "ملا فلان",
+                schedule: "كل يوم الساعة 8:45 مساءً"
+            }
+        ];
+
+        const listContainer = document.getElementById('husayniyahs-list');
+
+        // دالة لعرض البيانات في الصفحة
+        function displayHusayniyahs(data) {
+            data.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.classList.add('husayniyah-item');
+
+                const nameDiv = document.createElement('div');
+                nameDiv.classList.add('husayniyah-name');
+                nameDiv.textContent = item.name;
+
+                // إضافة حالة القراءة
+                const statusSpan = document.createElement('span');
+                statusSpan.textContent = item.status;
+                statusSpan.style.marginRight = '10px';
+                statusSpan.style.color = (item.status === 'تقرأ الآن') ? 'green' : '#999';
+                nameDiv.appendChild(statusSpan);
+
+                const detailsDiv = document.createElement('div');
+                detailsDiv.classList.add('husayniyah-details');
+                detailsDiv.innerHTML = `
+                    <p><strong>الموقع:</strong> ${item.location}</p>
+                    <p><strong>الخطيب:</strong> ${item.speaker}</p>
+                    <p><strong>الموعد:</strong> ${item.schedule}</p>
+                `;
+
+                itemDiv.appendChild(nameDiv);
+                itemDiv.appendChild(detailsDiv);
+                listContainer.appendChild(itemDiv);
+
+                // إضافة وظيفة القائمة المنسدلة
+                nameDiv.addEventListener('click', () => {
+                    const isActive = nameDiv.classList.toggle('active');
+                    detailsDiv.style.maxHeight = isActive ? detailsDiv.scrollHeight + "px" : null;
+                });
+            });
+        }
+
+        // عرض البيانات عند تحميل الصفحة
+        displayHusayniyahs(husayniyahsData);
+
+    </script>
+</body>
+</html>
