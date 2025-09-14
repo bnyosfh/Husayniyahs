@@ -43,7 +43,7 @@ h1 {
     font-size: 1.2em;
     font-weight: bold;
     color: #343a40;
-    margin-left: auto;
+    margin-right: auto;
 }
 .majlis-location {
     font-size: 0.9em;
@@ -76,12 +76,17 @@ h1 {
 .majlis-name-wrapper.active .arrow {
     transform: rotate(-180deg);
 }
+/* التعديل هنا: إزالة الحاشية من الوضع الافتراضي وإضافتها عند التوسيع فقط */
 .majlis-details {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.4s ease-out;
-    padding: 0 20px 20px;
+    transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+    padding: 0 20px;
 }
+.majlis-name-wrapper.active + .majlis-details {
+    padding-bottom: 20px;
+}
+
 .details-item {
     background-color: #e9ecef;
     border-radius: 10px;
@@ -126,9 +131,9 @@ h1 {
 .location-icon {
     font-size: 1.5em;
     color: #007bff;
-    margin-right: 15px;
+    margin: 0 10px;
     transition: transform 0.2s ease;
 }
-.details-item:hover .location-icon {
+.majlis-name-wrapper:hover .location-icon {
     transform: scale(1.1);
 }
