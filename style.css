@@ -1,1 +1,134 @@
-
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+        
+body {
+    font-family: 'Tajawal', sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+.container {
+    width: 100%;
+    max-width: 500px;
+}
+h1 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.majlis-item {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+.majlis-name-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    cursor: pointer;
+}
+.majlis-name-wrapper.active {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    background-color: #f8f9fa;
+}
+.majlis-name {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #343a40;
+    margin-left: auto;
+}
+.majlis-location {
+    font-size: 0.9em;
+    color: #6c757d;
+    margin-top: 5px;
+}
+.status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #fff;
+    white-space: nowrap;
+    display: none;
+}
+.status.current {
+    background-color: #28a745;
+}
+.status.upcoming {
+    background-color: #ffc107;
+}
+.status.visible {
+    display: block;
+}
+.arrow {
+    font-size: 1.2em;
+    color: #6c757d;
+    transition: transform 0.3s ease;
+}
+.majlis-name-wrapper.active .arrow {
+    transform: rotate(-180deg);
+}
+.majlis-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+    padding: 0 20px 20px;
+}
+.details-item {
+    background-color: #e9ecef;
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.details-item:last-child {
+    margin-bottom: 0;
+}
+.details-item-content {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+.preacher-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-grow: 1;
+    font-size: 1em;
+    color: #343a40;
+    font-weight: bold;
+}
+.preacher-info img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.time-box {
+    padding: 8px 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    font-weight: bold;
+    color: #28a745;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.location-icon {
+    font-size: 1.5em;
+    color: #007bff;
+    margin-right: 15px;
+    transition: transform 0.2s ease;
+}
+.details-item:hover .location-icon {
+    transform: scale(1.1);
+}
