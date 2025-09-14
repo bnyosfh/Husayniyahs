@@ -3,22 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<h1>مواعيد المآتم الحسينية</h1>
+    <title>مواعيد المآتم الحسينية</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>قائمة المجالس</h1>
+        <h1>مواعيد المآتم الحسينية</h1>
         <div id="majlis-list">
             </div>
     </div>
     
     <script>
-        // رابط جدول بيانات جوجل (تأكد من أنه صحيح)
         const googleSheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRfvjR7IT_AcWbN-1ZyJ1fSfkM4kzV_TmKrjzE7LFvpGhEwm1o_KxNiR38hUyNFkB7B7pqhD5lqH85r/pub?gid=0&single=true&output=csv';
         const listContainer = document.getElementById('majlis-list');
         
-        // وظيفة لتحويل الوقت النصي إلى كائن وقت
         function parseTime(timeString) {
             const now = new Date();
             let hours = 0;
@@ -26,17 +24,18 @@
             const parts = timeString.split(' ')[0].split(':');
             hours = parseInt(parts[0]);
             minutes = parseInt(parts[1]);
+
             if (timeString.includes('مساءً') && hours < 12) {
                 hours += 12;
             }
             if (timeString.includes('صباحًا') && hours === 12) {
                 hours = 0;
             }
+            
             now.setHours(hours, minutes, 0, 0);
             return now;
         }
 
-        // وظيفة لتحليل بيانات CSV
         function parseCSV(csv) {
             const lines = csv.split('\n').filter(line => line.trim() !== '');
             const headers = lines[0].split(',').map(header => header.trim());
@@ -51,7 +50,6 @@
             return data;
         }
 
-        // جلب البيانات وعرضها
         async function fetchMajlisData() {
             try {
                 const response = await fetch(googleSheetURL);
@@ -75,7 +73,6 @@
             }
         }
 
-        // عرض البيانات على الصفحة
         function displayMajlis(data) {
             const now = new Date();
             const nowInMinutes = now.getHours() * 60 + now.getMinutes();
@@ -191,7 +188,6 @@
                     statusSpan.classList.toggle('visible', !isActive);
                 });
                 
-                // Set initial state based on time
                 statusSpan.classList.add('visible');
             });
         }
