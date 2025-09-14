@@ -71,10 +71,10 @@
     </div>
 
     <script>
-        // استبدل هذا الرابط برابط Google Sheet الذي قمت بنشره
+        // استبدل هذا الرابط برابط Google Sheet الذي قمت بنشره بصيغة CSV
         const googleSheetURL = 'Your-Published-Google-Sheet-URL-Here'; 
         const listContainer = document.getElementById('husayniyahs-list');
-
+        
         // وظيفة لتحويل الوقت النصي إلى كائن وقت يمكن مقارنته
         function parseTime(timeString) {
             const now = new Date();
@@ -97,16 +97,21 @@
 
         async function fetchHusayniyahsData() {
             try {
+                // Fetch the CSV data as plain text
                 const response = await fetch(googleSheetURL);
-                const data = await response.json();
+                const csvText = await response.text();
                 
-                const formattedData = data.feed.entry.map(row => ({
-                    name: row.gsx$husayniyah_name.$t,
-                    location_text: row.gsx$location_text.$t,
-                    location_url: row.gsx$location_url.$t,
-                    speaker: row.gsx$speaker.$t,
-                    time: row.gsx$time.$t,
-                }));
+                const rows = csvText.split('\n').slice(1); // Split by newline and remove header row
+                const formattedData = rows.map(row => {
+                    const columns = row.split(',');
+                    return {
+                        name: columns[0],
+                        location_text: columns[1],
+                        location_url: columns[2],
+                        speaker: columns[3],
+                        time: columns[4]
+                    };
+                });
                 
                 displayHusayniyahs(formattedData);
 
@@ -120,13 +125,12 @@
             const now = new Date();
             const nowInMinutes = now.getHours() * 60 + now.getMinutes();
 
-            // إضافة حالة القراءة بشكل تلقائي
             data.forEach(item => {
                 const sessionTime = parseTime(item.time);
                 const sessionTimeInMinutes = sessionTime.getHours() * 60 + sessionTime.getMinutes();
                 const difference = sessionTimeInMinutes - nowInMinutes;
                 
-                if (difference > -30 && difference < 30) { // 30 دقيقة قبل وبعد الموعد
+                if (difference > -30 && difference < 30) { 
                     item.status = "تقرأ الآن";
                 } else {
                     item.status = "قريباً";
