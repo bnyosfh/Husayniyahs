@@ -75,6 +75,26 @@
         const googleSheetURL = 'Your-Published-Google-Sheet-URL-Here'; 
         const listContainer = document.getElementById('husayniyahs-list');
 
+        // وظيفة لتحويل الوقت النصي إلى كائن وقت يمكن مقارنته
+        function parseTime(timeString) {
+            const now = new Date();
+            let hours = 0;
+            let minutes = 0;
+            const parts = timeString.split(' ')[0].split(':');
+            hours = parseInt(parts[0]);
+            minutes = parseInt(parts[1]);
+
+            if (timeString.includes('مساءً') && hours < 12) {
+                hours += 12;
+            }
+            if (timeString.includes('صباحًا') && hours === 12) {
+                hours = 0;
+            }
+            
+            now.setHours(hours, minutes, 0, 0);
+            return now;
+        }
+
         async function fetchHusayniyahsData() {
             try {
                 const response = await fetch(googleSheetURL);
@@ -86,7 +106,6 @@
                     location_url: row.gsx$location_url.$t,
                     speaker: row.gsx$speaker.$t,
                     time: row.gsx$time.$t,
-                    status: row.gsx$status.$t
                 }));
                 
                 displayHusayniyahs(formattedData);
@@ -98,6 +117,22 @@
         }
 
         function displayHusayniyahs(data) {
+            const now = new Date();
+            const nowInMinutes = now.getHours() * 60 + now.getMinutes();
+
+            // إضافة حالة القراءة بشكل تلقائي
+            data.forEach(item => {
+                const sessionTime = parseTime(item.time);
+                const sessionTimeInMinutes = sessionTime.getHours() * 60 + sessionTime.getMinutes();
+                const difference = sessionTimeInMinutes - nowInMinutes;
+                
+                if (difference > -30 && difference < 30) { // 30 دقيقة قبل وبعد الموعد
+                    item.status = "تقرأ الآن";
+                } else {
+                    item.status = "قريباً";
+                }
+            });
+
             const groupedData = data.reduce((acc, item) => {
                 if (!acc[item.name]) {
                     acc[item.name] = {
@@ -117,8 +152,8 @@
             }, {});
 
             const sortedData = Object.values(groupedData).sort((a, b) => {
-                if (a.status === "تقرأ الآن") return -1;
-                if (b.status === "تقرأ الآن") return 1;
+                if (a.sessions.some(s => s.status === "تقرأ الآن")) return -1;
+                if (b.sessions.some(s => s.status === "تقرأ الآن")) return 1;
                 return 0;
             });
 
@@ -133,9 +168,9 @@
                 nameDiv.textContent = item.name;
 
                 const statusSpan = document.createElement('span');
-                statusSpan.textContent = item.status;
+                statusSpan.textContent = item.sessions.some(s => s.status === "تقرأ الآن") ? "تقرأ الآن" : "قريباً";
                 statusSpan.style.marginRight = '10px';
-                statusSpan.style.color = (item.status === 'تقرأ الآن') ? 'green' : '#999';
+                statusSpan.style.color = (statusSpan.textContent === 'تقرأ الآن') ? 'green' : '#999';
                 nameDiv.appendChild(statusSpan);
 
                 const detailsDiv = document.createElement('div');
