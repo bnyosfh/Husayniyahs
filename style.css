@@ -76,7 +76,6 @@ h1 {
 .majlis-name-wrapper.active .arrow {
     transform: rotate(-180deg);
 }
-/* التعديل هنا: إزالة الحاشية من الوضع الافتراضي وإضافتها عند التوسيع فقط */
 .majlis-details {
     max-height: 0;
     overflow: hidden;
@@ -95,15 +94,15 @@ h1 {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
-.details-item:last-child {
-    margin-bottom: 0;
+
+.details-item.active {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
-.details-item-content {
-    display: flex;
-    align-items: center;
-    flex-grow: 1;
-}
+
 .preacher-info {
     display: flex;
     align-items: center;
@@ -112,6 +111,7 @@ h1 {
     font-size: 1em;
     color: #343a40;
     font-weight: bold;
+    transition: all 0.3s ease;
 }
 .preacher-info img {
     width: 50px;
@@ -127,6 +127,7 @@ h1 {
     color: #28a745;
     white-space: nowrap;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
 }
 .location-icon {
     font-size: 1.5em;
@@ -136,4 +137,44 @@ h1 {
 }
 .majlis-name-wrapper:hover .location-icon {
     transform: scale(1.1);
+}
+
+/* تنسيقات جديدة لجدول الخطيب */
+.speaker-details {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+    margin-top: -5px;
+}
+.speaker-details.active {
+    padding: 15px;
+}
+.speaker-schedule-title {
+    font-weight: bold;
+    font-size: 0.9em;
+    text-align: center;
+    padding: 10px 0;
+    color: #6c757d;
+}
+.speaker-schedule-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    border-top: 1px solid #e9ecef;
+}
+.schedule-location {
+    font-size: 0.9em;
+    color: #495057;
+}
+.schedule-time-box {
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #007bff;
+    background-color: #e9f5ff;
+    padding: 5px 10px;
+    border-radius: 6px;
 }
