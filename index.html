@@ -53,6 +53,14 @@
             padding-top: 10px;
             color: #777;
         }
+        .husayniyah-details ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .husayniyah-details li {
+            padding: 5px 0;
+        }
     </style>
 </head>
 <body>
@@ -63,36 +71,60 @@
     </div>
 
     <script>
-        // هذا مجرد مثال على البيانات. ستقوم لاحقًا باستبداله ببيانات Google Sheet
-        const husayniyahsData = [
-            {
-                name: "حسينية الإمام علي (ع)",
-                location: "المنطقة الشرقية",
-                status: "تقرأ الآن",
-                speaker: "الشيخ فلان الفلاني",
-                schedule: "كل يوم الساعة 7:30 مساءً"
-            },
-            {
-                name: "حسينية الإمام الحسين (ع)",
-                location: "المنطقة الشرقية",
-                status: "قريباً",
-                speaker: "السيد فلان",
-                schedule: "كل يوم الساعة 8:00 مساءً"
-            },
-            {
-                name: "حسينية الزهراء (ع)",
-                location: "المنطقة الشرقية",
-                status: "قريباً",
-                speaker: "ملا فلان",
-                schedule: "كل يوم الساعة 8:45 مساءً"
-            }
-        ];
-
+        // استبدل هذا الرابط برابط Google Sheet الذي قمت بنشره
+        const googleSheetURL = 'Your-Published-Google-Sheet-URL-Here'; 
         const listContainer = document.getElementById('husayniyahs-list');
 
-        // دالة لعرض البيانات في الصفحة
+        async function fetchHusayniyahsData() {
+            try {
+                const response = await fetch(googleSheetURL);
+                const data = await response.json();
+                
+                const formattedData = data.feed.entry.map(row => ({
+                    name: row.gsx$husayniyah_name.$t,
+                    location_text: row.gsx$location_text.$t,
+                    location_url: row.gsx$location_url.$t,
+                    speaker: row.gsx$speaker.$t,
+                    time: row.gsx$time.$t,
+                    status: row.gsx$status.$t
+                }));
+                
+                displayHusayniyahs(formattedData);
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                listContainer.innerHTML = "<p style='text-align:center;'>عذراً، لم نتمكن من جلب البيانات.</p>";
+            }
+        }
+
         function displayHusayniyahs(data) {
-            data.forEach(item => {
+            const groupedData = data.reduce((acc, item) => {
+                if (!acc[item.name]) {
+                    acc[item.name] = {
+                        name: item.name,
+                        location_text: item.location_text,
+                        location_url: item.location_url,
+                        sessions: [],
+                        status: item.status
+                    };
+                }
+                acc[item.name].sessions.push({
+                    speaker: item.speaker,
+                    time: item.time,
+                    status: item.status
+                });
+                return acc;
+            }, {});
+
+            const sortedData = Object.values(groupedData).sort((a, b) => {
+                if (a.status === "تقرأ الآن") return -1;
+                if (b.status === "تقرأ الآن") return 1;
+                return 0;
+            });
+
+            listContainer.innerHTML = ''; 
+
+            sortedData.forEach(item => {
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('husayniyah-item');
 
@@ -100,7 +132,6 @@
                 nameDiv.classList.add('husayniyah-name');
                 nameDiv.textContent = item.name;
 
-                // إضافة حالة القراءة
                 const statusSpan = document.createElement('span');
                 statusSpan.textContent = item.status;
                 statusSpan.style.marginRight = '10px';
@@ -109,17 +140,24 @@
 
                 const detailsDiv = document.createElement('div');
                 detailsDiv.classList.add('husayniyah-details');
+                
+                let sessionsHTML = '';
+                item.sessions.forEach(session => {
+                    sessionsHTML += `
+                        <li><strong>الخطيب:</strong> ${session.speaker} - <strong>الموعد:</strong> ${session.time}</li>
+                    `;
+                });
+                
                 detailsDiv.innerHTML = `
-                    <p><strong>الموقع:</strong> ${item.location}</p>
-                    <p><strong>الخطيب:</strong> ${item.speaker}</p>
-                    <p><strong>الموعد:</strong> ${item.schedule}</p>
+                    <p><strong>الموقع:</strong> <a href="${item.location_url}" target="_blank">${item.location_text}</a></p>
+                    <p><strong>الجلسات:</strong></p>
+                    <ul>${sessionsHTML}</ul>
                 `;
 
                 itemDiv.appendChild(nameDiv);
                 itemDiv.appendChild(detailsDiv);
                 listContainer.appendChild(itemDiv);
 
-                // إضافة وظيفة القائمة المنسدلة
                 nameDiv.addEventListener('click', () => {
                     const isActive = nameDiv.classList.toggle('active');
                     detailsDiv.style.maxHeight = isActive ? detailsDiv.scrollHeight + "px" : null;
@@ -127,9 +165,7 @@
             });
         }
 
-        // عرض البيانات عند تحميل الصفحة
-        displayHusayniyahs(husayniyahsData);
-
+        fetchHusayniyahsData();
     </script>
 </body>
 </html>
