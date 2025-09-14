@@ -16,10 +16,10 @@
     <script>
         const googleSheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRfvjR7IT_AcWbN-1ZyJ1fSfkM4kzV_TmKrjzE7LFvpGhEwm1o_KxNiR38hUyNFkB7B7pqhD5lqH85r/pub?gid=0&single=true&output=csv';
         const listContainer = document.getElementById('majlis-list');
-        
-        // رابط الصورة الافتراضية
         const default_photo_url = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23ccc'/><path d='M50,57.5c-11.05,0-20,8.95-20,20h40c0-11.05-8.95-20-20-20z' fill='%23aaa'/><circle cx='50' cy='35' r='15' fill='%23aaa'/></svg>";
         
+        let allSessionsData = [];
+
         function parseTime(timeString) {
             const now = new Date();
             let hours = 0;
@@ -59,8 +59,8 @@
                 const csvText = await response.text();
                 const data = parseCSV(csvText);
                 
-                const formattedData = data.map(row => ({
-                    name: row.majlis_name,
+                allSessionsData = data.map(row => ({
+                    majlis_name: row.majlis_name,
                     location_text: row.location_text,
                     location_url: row.location_url,
                     speaker: row.preacher,
@@ -68,7 +68,7 @@
                     preacher_photo_url: row.preacher_photo_url
                 }));
                 
-                displayMajlis(formattedData);
+                displayMajlis(allSessionsData);
 
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -93,16 +93,15 @@
             });
 
             const groupedData = data.reduce((acc, item) => {
-                if (!acc[item.name]) {
-                    acc[item.name] = {
-                        name: item.name,
+                if (!acc[item.majlis_name]) {
+                    acc[item.majlis_name] = {
+                        name: item.majlis_name,
                         location_text: item.location_text,
                         location_url: item.location_url,
-                        sessions: [],
-                        status: item.status
+                        sessions: []
                     };
                 }
-                acc[item.name].sessions.push({
+                acc[item.majlis_name].sessions.push({
                     speaker: item.speaker,
                     time: item.time,
                     status: item.status,
@@ -169,17 +168,17 @@
                 
                 let sessionsHTML = '';
                 item.sessions.forEach(session => {
-                    // التحقق من وجود رابط للصورة
                     const photo_src = session.preacher_photo_url.trim() ? session.preacher_photo_url : default_photo_url;
                     
                     sessionsHTML += `
-                        <div class="details-item">
+                        <div class="details-item" data-speaker-name="${session.speaker}">
                             <div class="preacher-info">
                                 <img src="${photo_src}" alt="صورة الخطيب">
                                 <span>${session.speaker}</span>
                             </div>
                             <div class="time-box">${session.time}</div>
                         </div>
+                        <div class="speaker-details"></div>
                     `;
                 });
                 
@@ -188,6 +187,13 @@
                 itemDiv.appendChild(nameWrapper);
                 itemDiv.appendChild(detailsDiv);
                 listContainer.appendChild(itemDiv);
+
+                const recalculateParentHeight = () => {
+                    const parentContainer = detailsDiv;
+                    if (parentContainer.classList.contains('active')) {
+                        parentContainer.style.maxHeight = parentContainer.scrollHeight + "px";
+                    }
+                };
 
                 nameWrapper.addEventListener('click', () => {
                     const isActive = nameWrapper.classList.toggle('active');
@@ -202,9 +208,61 @@
                         }
                     }
                 });
+
+                detailsDiv.querySelectorAll('.details-item').forEach(speakerItem => {
+                    speakerItem.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        const speakerName = speakerItem.getAttribute('data-speaker-name');
+                        const speakerDetailsDiv = speakerItem.nextElementSibling;
+                        const speakerCardContent = speakerItem.querySelector('.preacher-info');
+                        const timeBox = speakerItem.querySelector('.time-box');
+
+                        const isActive = speakerDetailsDiv.classList.toggle('active');
+                        speakerItem.classList.toggle('active');
+
+                        if (isActive) {
+                            timeBox.style.display = 'none';
+                            speakerCardContent.style.justifyContent = 'center';
+                            displaySpeakerSchedule(speakerName, speakerDetailsDiv, speakerItem);
+                        } else {
+                            speakerDetailsDiv.style.maxHeight = '0';
+                            speakerDetailsDiv.innerHTML = '';
+                            
+                            // إعادة الخصائص إلى حالتها الأصلية
+                            timeBox.style.display = 'block';
+                            speakerCardContent.style.justifyContent = 'space-between';
+                        }
+                        
+                        recalculateParentHeight();
+                    });
+                });
                 
                 statusSpan.classList.add('visible');
             });
+        }
+
+        function displaySpeakerSchedule(speakerName, containerDiv, speakerItem) {
+            const speakerSessions = allSessionsData.filter(session => session.speaker === speakerName);
+
+            let scheduleHTML = '';
+            scheduleHTML += `<div class="speaker-schedule-title">جميع مجالس ${speakerName}</div>`;
+            
+            speakerSessions.forEach(session => {
+                scheduleHTML += `
+                    <div class="speaker-schedule-item">
+                        <div class="schedule-location">${session.majlis_name} - ${session.location_text}</div>
+                        <div class="schedule-time-box">${session.time}</div>
+                    </div>
+                `;
+            });
+            
+            containerDiv.innerHTML = scheduleHTML;
+            containerDiv.style.maxHeight = containerDiv.scrollHeight + 'px';
+
+            const parentDetailsDiv = containerDiv.closest('.majlis-details');
+            if (parentDetailsDiv) {
+                parentDetailsDiv.style.maxHeight = parentDetailsDiv.scrollHeight + containerDiv.scrollHeight + "px";
+            }
         }
 
         fetchMajlisData();
