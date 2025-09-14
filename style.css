@@ -39,6 +39,11 @@ h1 {
     border-bottom-right-radius: 0;
     background-color: #f8f9fa;
 }
+.text-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
 .majlis-name {
     font-size: 1.2em;
     font-weight: bold;
@@ -50,31 +55,50 @@ h1 {
     color: #6c757d;
     margin-top: 5px;
 }
-.status {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.8em;
-    font-weight: bold;
-    color: #fff;
-    white-space: nowrap;
-    display: none;
+.icons-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
-.status.current {
-    background-color: #28a745;
+
+/* تنسيق وحركة أيقونة الموقع */
+.location-icon {
+    width: 24px;
+    height: 24px;
+    color: #007bff;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    animation: pulse 1.5s infinite; /* إضافة الحركة التذبذبية */
 }
-.status.upcoming {
-    background-color: #ffc107;
+
+/* حركة التذبذب (التكبير والتصغير) */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.85);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
-.status.visible {
-    display: block;
-}
+
 .arrow {
-    font-size: 1.2em;
+    width: 24px;
+    height: 24px;
     color: #6c757d;
     transition: transform 0.3s ease;
 }
-.majlis-name-wrapper.active .arrow {
-    transform: rotate(-180deg);
+
+.majlis-name-wrapper.active .location-icon {
+    opacity: 1;
+    visibility: visible;
+}
+
+.arrow.open {
+    transform: rotate(90deg);
 }
 .majlis-details {
     max-height: 0;
@@ -138,16 +162,6 @@ h1 {
 /* قاعدة جديدة لإخفاء صندوق الوقت عند تفعيل القائمة */
 .preacher-info.centered-preacher + .time-box {
     display: none;
-}
-
-.location-icon {
-    font-size: 1.5em;
-    color: #007bff;
-    margin: 0 10px;
-    transition: transform 0.2s ease;
-}
-.majlis-name-wrapper:hover .location-icon {
-    transform: scale(1.1);
 }
 
 /* تنسيقات جديدة لجدول الخطيب */
