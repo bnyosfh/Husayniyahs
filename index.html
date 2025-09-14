@@ -71,11 +71,9 @@
     </div>
 
     <script>
-        // استبدل هذا الرابط برابط Google Sheet الذي قمت بنشره بصيغة CSV
-        const googleSheetURL = 'Your-Published-Google-Sheet-URL-Here'; 
+        const googleSheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRfvjR7IT_AcWbN-1ZyJ1fSfkM4kzV_TmKrjzE7LFvpGhEwm1o_KxNiR38hUyNFkB7B7pqhD5lqH85r/pub?gid=0&single=true&output=csv'; 
         const listContainer = document.getElementById('husayniyahs-list');
         
-        // وظيفة لتحويل الوقت النصي إلى كائن وقت يمكن مقارنته
         function parseTime(timeString) {
             const now = new Date();
             let hours = 0;
@@ -95,29 +93,40 @@
             return now;
         }
 
+        function parseCSV(csv) {
+            const lines = csv.split('\n').filter(line => line.trim() !== '');
+            const headers = lines[0].split(',').map(header => header.trim());
+            const data = lines.slice(1).map(line => {
+                const values = line.split(',');
+                const obj = {};
+                headers.forEach((header, i) => {
+                    obj[header] = values[i];
+                });
+                return obj;
+            });
+            return data;
+        }
+
         async function fetchHusayniyahsData() {
             try {
-                // Fetch the CSV data as plain text
                 const response = await fetch(googleSheetURL);
                 const csvText = await response.text();
                 
-                const rows = csvText.split('\n').slice(1); // Split by newline and remove header row
-                const formattedData = rows.map(row => {
-                    const columns = row.split(',');
-                    return {
-                        name: columns[0],
-                        location_text: columns[1],
-                        location_url: columns[2],
-                        speaker: columns[3],
-                        time: columns[4]
-                    };
-                });
+                const data = parseCSV(csvText);
+                
+                const formattedData = data.map(row => ({
+                    name: row.husayniyah_name,
+                    location_text: row.location_text,
+                    location_url: row.location_url,
+                    speaker: row.speaker,
+                    time: row.time
+                }));
                 
                 displayHusayniyahs(formattedData);
 
             } catch (error) {
                 console.error("Error fetching data:", error);
-                listContainer.innerHTML = "<p style='text-align:center;'>عذراً، لم نتمكن من جلب البيانات.</p>";
+                listContainer.innerHTML = "<p style='text-align:center;'>عذراً، لم نتمكن من جلب البيانات. تأكد من صحة الرابط وأسماء الأعمدة.</p>";
             }
         }
 
@@ -157,7 +166,7 @@
 
             const sortedData = Object.values(groupedData).sort((a, b) => {
                 if (a.sessions.some(s => s.status === "تقرأ الآن")) return -1;
-                if (b.sessions.some(s => s.status === "تقرأ الآن")) return 1;
+                if (b.sessions.some(s => b.status === "تقرأ الآن")) return 1;
                 return 0;
             });
 
