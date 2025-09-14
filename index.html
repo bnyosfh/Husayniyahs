@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>قائمة الحسينيات</title>
+    <title>قائمة المجالس</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -23,15 +23,15 @@
             color: #333;
             text-align: center;
         }
-        .husayniyah-item {
+        .majlis-item {
             border-bottom: 1px solid #eee;
             padding: 15px 0;
             cursor: pointer;
         }
-        .husayniyah-item:last-child {
+        .majlis-item:last-child {
             border-bottom: none;
         }
-        .husayniyah-name {
+        .majlis-name {
             font-size: 1.2em;
             font-weight: bold;
             color: #555;
@@ -39,40 +39,40 @@
             justify-content: space-between;
             align-items: center;
         }
-        .husayniyah-name::after {
+        .majlis-name::after {
             content: '▼';
             transition: transform 0.3s ease;
         }
-        .husayniyah-name.active::after {
+        .majlis-name.active::after {
             transform: rotate(-180deg);
         }
-        .husayniyah-details {
+        .majlis-details {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease-out;
             padding-top: 10px;
             color: #777;
         }
-        .husayniyah-details ul {
+        .majlis-details ul {
             list-style: none;
             padding: 0;
             margin: 0;
         }
-        .husayniyah-details li {
+        .majlis-details li {
             padding: 5px 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>قائمة الحسينيات</h1>
-        <div id="husayniyahs-list">
+        <h1>قائمة المجالس</h1>
+        <div id="majlis-list">
             </div>
     </div>
 
     <script>
         const googleSheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRfvjR7IT_AcWbN-1ZyJ1fSfkM4kzV_TmKrjzE7LFvpGhEwm1o_KxNiR38hUyNFkB7B7pqhD5lqH85r/pub?gid=0&single=true&output=csv'; 
-        const listContainer = document.getElementById('husayniyahs-list');
+        const listContainer = document.getElementById('majlis-list');
         
         function parseTime(timeString) {
             const now = new Date();
@@ -107,7 +107,7 @@
             return data;
         }
 
-        async function fetchHusayniyahsData() {
+        async function fetchMajlisData() {
             try {
                 const response = await fetch(googleSheetURL);
                 const csvText = await response.text();
@@ -115,14 +115,14 @@
                 const data = parseCSV(csvText);
                 
                 const formattedData = data.map(row => ({
-                    name: row.husayniyah_name,
+                    name: row.majlis_name,
                     location_text: row.location_text,
                     location_url: row.location_url,
-                    speaker: row.speaker,
+                    speaker: row.preacher,
                     time: row.time
                 }));
                 
-                displayHusayniyahs(formattedData);
+                displayMajlis(formattedData);
 
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -130,7 +130,7 @@
             }
         }
 
-        function displayHusayniyahs(data) {
+        function displayMajlis(data) {
             const now = new Date();
             const nowInMinutes = now.getHours() * 60 + now.getMinutes();
 
@@ -174,10 +174,10 @@
 
             sortedData.forEach(item => {
                 const itemDiv = document.createElement('div');
-                itemDiv.classList.add('husayniyah-item');
+                itemDiv.classList.add('majlis-item');
 
                 const nameDiv = document.createElement('div');
-                nameDiv.classList.add('husayniyah-name');
+                nameDiv.classList.add('majlis-name');
                 nameDiv.textContent = item.name;
 
                 const statusSpan = document.createElement('span');
@@ -187,7 +187,7 @@
                 nameDiv.appendChild(statusSpan);
 
                 const detailsDiv = document.createElement('div');
-                detailsDiv.classList.add('husayniyah-details');
+                detailsDiv.classList.add('majlis-details');
                 
                 let sessionsHTML = '';
                 item.sessions.forEach(session => {
@@ -213,7 +213,7 @@
             });
         }
 
-        fetchHusayniyahsData();
+        fetchMajlisData();
     </script>
 </body>
 </html>
