@@ -4,64 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>قائمة المجالس</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-        .majlis-item {
-            border-bottom: 1px solid #eee;
-            padding: 15px 0;
-            cursor: pointer;
-        }
-        .majlis-item:last-child {
-            border-bottom: none;
-        }
-        .majlis-name {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #555;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .majlis-name::after {
-            content: '▼';
-            transition: transform 0.3s ease;
-        }
-        .majlis-name.active::after {
-            transform: rotate(-180deg);
-        }
-        .majlis-details {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-            padding-top: 10px;
-            color: #777;
-        }
-        .majlis-details ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .majlis-details li {
-            padding: 5px 0;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
@@ -69,11 +12,13 @@
         <div id="majlis-list">
             </div>
     </div>
-
+    
     <script>
-        const googleSheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRfvjR7IT_AcWbN-1ZyJ1fSfkM4kzV_TmKrjzE7LFvpGhEwm1o_KxNiR38hUyNFkB7B7pqhD5lqH85r/pub?gid=0&single=true&output=csv'; 
+        // رابط جدول بيانات جوجل (تأكد من أنه صحيح)
+        const googleSheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRfvjR7IT_AcWbN-1ZyJ1fSfkM4kzV_TmKrjzE7LFvpGhEwm1o_KxNiR38hUyNFkB7B7pqhD5lqH85r/pub?gid=0&single=true&output=csv';
         const listContainer = document.getElementById('majlis-list');
         
+        // وظيفة لتحويل الوقت النصي إلى كائن وقت
         function parseTime(timeString) {
             const now = new Date();
             let hours = 0;
@@ -81,18 +26,17 @@
             const parts = timeString.split(' ')[0].split(':');
             hours = parseInt(parts[0]);
             minutes = parseInt(parts[1]);
-
             if (timeString.includes('مساءً') && hours < 12) {
                 hours += 12;
             }
             if (timeString.includes('صباحًا') && hours === 12) {
                 hours = 0;
             }
-            
             now.setHours(hours, minutes, 0, 0);
             return now;
         }
 
+        // وظيفة لتحليل بيانات CSV
         function parseCSV(csv) {
             const lines = csv.split('\n').filter(line => line.trim() !== '');
             const headers = lines[0].split(',').map(header => header.trim());
@@ -107,11 +51,11 @@
             return data;
         }
 
+        // جلب البيانات وعرضها
         async function fetchMajlisData() {
             try {
                 const response = await fetch(googleSheetURL);
                 const csvText = await response.text();
-                
                 const data = parseCSV(csvText);
                 
                 const formattedData = data.map(row => ({
@@ -119,7 +63,8 @@
                     location_text: row.location_text,
                     location_url: row.location_url,
                     speaker: row.preacher,
-                    time: row.time
+                    time: row.time,
+                    preacher_photo_url: row.preacher_photo_url
                 }));
                 
                 displayMajlis(formattedData);
@@ -130,6 +75,7 @@
             }
         }
 
+        // عرض البيانات على الصفحة
         function displayMajlis(data) {
             const now = new Date();
             const nowInMinutes = now.getHours() * 60 + now.getMinutes();
@@ -159,7 +105,8 @@
                 acc[item.name].sessions.push({
                     speaker: item.speaker,
                     time: item.time,
-                    status: item.status
+                    status: item.status,
+                    preacher_photo_url: item.preacher_photo_url
                 });
                 return acc;
             }, {});
@@ -176,15 +123,38 @@
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('majlis-item');
 
+                const nameWrapper = document.createElement('div');
+                nameWrapper.classList.add('majlis-name-wrapper');
+
+                const statusSpan = document.createElement('span');
+                statusSpan.classList.add('status');
+                if (item.sessions.some(s => s.status === "تقرأ الآن")) {
+                    statusSpan.textContent = "تقرأ الآن";
+                    statusSpan.classList.add('current');
+                } else {
+                    statusSpan.textContent = "قريباً";
+                    statusSpan.classList.add('upcoming');
+                }
+                
+                const textWrapper = document.createElement('div');
                 const nameDiv = document.createElement('div');
                 nameDiv.classList.add('majlis-name');
                 nameDiv.textContent = item.name;
 
-                const statusSpan = document.createElement('span');
-                statusSpan.textContent = item.sessions.some(s => s.status === "تقرأ الآن") ? "تقرأ الآن" : "قريباً";
-                statusSpan.style.marginRight = '10px';
-                statusSpan.style.color = (statusSpan.textContent === 'تقرأ الآن') ? 'green' : '#999';
-                nameDiv.appendChild(statusSpan);
+                const locationDiv = document.createElement('div');
+                locationDiv.classList.add('majlis-location');
+                locationDiv.textContent = item.location_text;
+
+                textWrapper.appendChild(nameDiv);
+                textWrapper.appendChild(locationDiv);
+                
+                const arrowSpan = document.createElement('span');
+                arrowSpan.classList.add('arrow');
+                arrowSpan.textContent = '▼';
+
+                nameWrapper.appendChild(statusSpan);
+                nameWrapper.appendChild(textWrapper);
+                nameWrapper.appendChild(arrowSpan);
 
                 const detailsDiv = document.createElement('div');
                 detailsDiv.classList.add('majlis-details');
@@ -192,24 +162,37 @@
                 let sessionsHTML = '';
                 item.sessions.forEach(session => {
                     sessionsHTML += `
-                        <li><strong>الخطيب:</strong> ${session.speaker} - <strong>الموعد:</strong> ${session.time}</li>
+                        <div class="details-item">
+                            <div class="details-item-content">
+                                <a href="${item.location_url}" target="_blank" style="text-decoration: none;">
+                                    <svg class="location-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5s-1.12 2.5-2.5 2.5z"/>
+                                    </svg>
+                                </a>
+                                <div class="preacher-info">
+                                    <img src="${session.preacher_photo_url}" alt="صورة الخطيب">
+                                    <span>${session.speaker}</span>
+                                </div>
+                            </div>
+                            <div class="time-box">${session.time}</div>
+                        </div>
                     `;
                 });
                 
-                detailsDiv.innerHTML = `
-                    <p><strong>الموقع:</strong> <a href="${item.location_url}" target="_blank">${item.location_text}</a></p>
-                    <p><strong>الجلسات:</strong></p>
-                    <ul>${sessionsHTML}</ul>
-                `;
+                detailsDiv.innerHTML = `<div>${sessionsHTML}</div>`;
 
-                itemDiv.appendChild(nameDiv);
+                itemDiv.appendChild(nameWrapper);
                 itemDiv.appendChild(detailsDiv);
                 listContainer.appendChild(itemDiv);
 
-                nameDiv.addEventListener('click', () => {
-                    const isActive = nameDiv.classList.toggle('active');
+                nameWrapper.addEventListener('click', () => {
+                    const isActive = nameWrapper.classList.toggle('active');
                     detailsDiv.style.maxHeight = isActive ? detailsDiv.scrollHeight + "px" : null;
+                    statusSpan.classList.toggle('visible', !isActive);
                 });
+                
+                // Set initial state based on time
+                statusSpan.classList.add('visible');
             });
         }
 
