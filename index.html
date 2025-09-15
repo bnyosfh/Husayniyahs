@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مواعيد المآتم الحسينية</title>
+<title>مواعيد المآتم</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>مواعيد المآتم الحسينية</h1>
+        <h1>مواعيد المآتم</h1>
         <div id="majlis-list">
             </div>
     </div>
@@ -40,18 +40,19 @@
         }
 
         function parseCSV(csv) {
-            const lines = csv.split('\n').filter(line => line.trim() !== '');
-            const headers = lines[0].split(',').map(header => header.trim());
-            const data = lines.slice(1).map(line => {
-                const values = line.split(',');
-                const obj = {};
-                headers.forEach((header, i) => {
-                    obj[header] = values[i];
-                });
-                return obj;
-            });
-            return data;
-        }
+    const lines = csv.split('\n').filter(line => line.trim() !== '');
+    const headers = lines[0].split(',').map(header => header.trim());
+    const data = lines.slice(1).map(line => {
+        const values = line.split(',');
+        const obj = {};
+        headers.forEach((header, i) => {
+            obj[header] = values[i];
+        });
+        return obj;
+    });
+
+    return data.filter(row => row.majlis_name && row.majlis_name.trim() !== '');
+}
 
         async function fetchMajlisData() {
             try {
