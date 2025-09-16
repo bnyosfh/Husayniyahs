@@ -14,10 +14,32 @@ body {
     width: 100%;
     max-width: 500px;
 }
-h1 {
-    color: #333;
+.logo-container {
     text-align: center;
     margin-bottom: 20px;
+}
+.logo {
+    max-width: 150px;
+    height: auto;
+    display: inline-block;
+}
+.search-box {
+    margin-bottom: 20px;
+}
+#searchInput {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1em;
+    font-family: 'Tajawal', sans-serif;
+    text-align: right;
+    box-sizing: border-box;
+}
+#searchInput:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 .majlis-item {
     background-color: #fff;
@@ -26,6 +48,9 @@ h1 {
     margin-bottom: 15px;
     overflow: hidden;
     transition: all 0.3s ease;
+}
+#majlis-list {
+    display: none;
 }
 .majlis-name-wrapper {
     display: flex;
@@ -60,8 +85,6 @@ h1 {
     align-items: center;
     gap: 5px;
 }
-
-/* تنسيق وحركة أيقونة الموقع */
 .location-icon {
     width: 24px;
     height: 24px;
@@ -69,10 +92,8 @@ h1 {
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s ease;
-    animation: pulse 1.5s infinite; /* إضافة الحركة التذبذبية */
+    animation: pulse 1.5s infinite;
 }
-
-/* حركة التذبذب (التكبير والتصغير) */
 @keyframes pulse {
     0% {
         transform: scale(1);
@@ -84,19 +105,16 @@ h1 {
         transform: scale(1);
     }
 }
-
 .arrow {
     width: 24px;
     height: 24px;
     color: #6c757d;
     transition: transform 0.3s ease;
 }
-
 .majlis-name-wrapper.active .location-icon {
     opacity: 1;
     visibility: visible;
 }
-
 .arrow.open {
     transform: rotate(90deg);
 }
@@ -120,12 +138,10 @@ h1 {
     cursor: pointer;
     transition: all 0.3s ease;
 }
-
 .details-item.active {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 }
-
 .preacher-info {
     display: flex;
     align-items: center;
@@ -136,12 +152,9 @@ h1 {
     font-weight: bold;
     transition: all 0.3s ease;
 }
-
-/* فئة جديدة لتوسيط محتوى الخطيب عند فتح القائمة */
 .preacher-info.centered-preacher {
     justify-content: center;
 }
-
 .preacher-info img {
     width: 50px;
     height: 50px;
@@ -158,13 +171,9 @@ h1 {
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     transition: all 0.3s ease;
 }
-
-/* قاعدة جديدة لإخفاء صندوق الوقت عند تفعيل القائمة */
 .preacher-info.centered-preacher + .time-box {
     display: none;
 }
-
-/* تنسيقات جديدة لجدول الخطيب */
 .speaker-details {
     background-color: #f8f9fa;
     border-radius: 10px;
