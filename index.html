@@ -3,14 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>مواعيد المآتم</title>
+    <title>مواعيد المآتم</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>مواعيد المآتم</h1>
+        <div class="logo-container">
+            <img src="maatem.png" alt="شعار الموقع" class="logo">
+        </div>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="ابحث باسم المأتم أو الخطيب...">
+        </div>
         <div id="majlis-list">
-            </div>
+        </div>
     </div>
     
     <script>
@@ -19,6 +24,7 @@
         const default_photo_url = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23ccc'/><path d='M50,57.5c-11.05,0-20,8.95-20,20h40c0-11.05-8.95-20-20-20z' fill='%23aaa'/><circle cx='50' cy='35' r='15' fill='%23aaa'/></svg>";
         
         let allSessionsData = [];
+        let originalSessionsData = [];
 
         function parseTime(timeString) {
             const now = new Date();
@@ -40,19 +46,18 @@
         }
 
         function parseCSV(csv) {
-    const lines = csv.split('\n').filter(line => line.trim() !== '');
-    const headers = lines[0].split(',').map(header => header.trim());
-    const data = lines.slice(1).map(line => {
-        const values = line.split(',');
-        const obj = {};
-        headers.forEach((header, i) => {
-            obj[header] = values[i];
-        });
-        return obj;
-    });
-
-    return data.filter(row => row.majlis_name && row.majlis_name.trim() !== '');
-}
+            const lines = csv.split('\n').filter(line => line.trim() !== '');
+            const headers = lines[0].split(',').map(header => header.trim());
+            const data = lines.slice(1).map(line => {
+                const values = line.split(',');
+                const obj = {};
+                headers.forEach((header, i) => {
+                    obj[header] = values[i];
+                });
+                return obj;
+            });
+            return data.filter(row => row.majlis_name && row.majlis_name.trim() !== '');
+        }
 
         async function fetchMajlisData() {
             try {
@@ -69,7 +74,9 @@
                     preacher_photo_url: row.preacher_photo_url
                 }));
                 
-                displayMajlis(allSessionsData);
+                originalSessionsData = [...allSessionsData];
+                
+                displayMajlis([]);
 
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -80,6 +87,12 @@
         function displayMajlis(data) {
             const now = new Date();
             const nowInMinutes = now.getHours() * 60 + now.getMinutes();
+
+            if (data.length > 0) {
+                listContainer.style.display = 'block';
+            } else {
+                listContainer.style.display = 'none';
+            }
 
             const groupedData = data.reduce((acc, item) => {
                 if (!acc[item.majlis_name]) {
@@ -224,6 +237,28 @@
                  parentDetailsDiv.style.maxHeight = parentDetailsDiv.scrollHeight + containerDiv.scrollHeight + "px";
             }
         }
+
+        function filterMajlis() {
+            let searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            
+            if (searchTerm.startsWith('حسيني')) {
+                searchTerm = searchTerm.replace('حسيني', '').trim();
+            }
+
+            if (searchTerm.length < 5) {
+                displayMajlis([]);
+                return;
+            }
+
+            const filteredData = originalSessionsData.filter(session => {
+                return session.majlis_name.toLowerCase().includes(searchTerm) ||
+                       session.speaker.toLowerCase().includes(searchTerm);
+            });
+
+            displayMajlis(filteredData);
+        }
+
+        document.getElementById('searchInput').addEventListener('input', filterMajlis);
 
         fetchMajlisData();
     </script>
