@@ -11,13 +11,25 @@
         <div class="logo-container">
             <img src="maatem.png" alt="شعار الموقع" class="logo">
         </div>
+
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="ابحث باسم المأتم أو الخطيب...">
         </div>
+
+        <div class="filter-box">
+            <select id="locationFilter">
+                <option value="">جميع الأماكن</option>
+            </select>
+        </div>
+        
         <div id="majlis-list">
         </div>
     </div>
     
+    <div class="footer-signature">
+        <img src="khademcrs.png" alt="khademcrs signature" class="signature-logo">
+    </div>
+
     <script>
         const googleSheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRfvjR7IT_AcWbN-1ZyJ1fSfkM4kzV_TmKrjzE7LFvpGhEwm1o_KxNiR38hUyNFkB7B7pqhD5lqH85r/pub?gid=0&single=true&output=csv';
         const listContainer = document.getElementById('majlis-list');
@@ -71,12 +83,13 @@
                     location_url: row.location_url,
                     speaker: row.preacher,
                     time: row.time,
-                    preacher_photo_url: row.preacher_photo_url
+                    preacher_photo_url: row.preacher_photo_url,
                 }));
                 
                 originalSessionsData = [...allSessionsData];
                 
-                displayMajlis([]);
+                populateLocationFilter();
+                displayMajlis(originalSessionsData);
 
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -84,6 +97,31 @@
             }
         }
 
+        function populateLocationFilter() {
+            const locationFilter = document.getElementById('locationFilter');
+            const uniqueLocations = [...new Set(originalSessionsData.map(item => item.location_text))];
+            
+            uniqueLocations.sort();
+
+            uniqueLocations.forEach(location => {
+                const option = document.createElement('option');
+                option.value = location;
+                option.textContent = location;
+                locationFilter.appendChild(option);
+            });
+
+            locationFilter.addEventListener('change', () => {
+                const selectedLocation = locationFilter.value;
+                document.getElementById('searchInput').value = '';
+                if (selectedLocation === '') {
+                    displayMajlis(originalSessionsData);
+                } else {
+                    const filteredData = originalSessionsData.filter(session => session.location_text === selectedLocation);
+                    displayMajlis(filteredData);
+                }
+            });
+        }
+        
         function displayMajlis(data) {
             const now = new Date();
             const nowInMinutes = now.getHours() * 60 + now.getMinutes();
@@ -240,13 +278,15 @@
 
         function filterMajlis() {
             let searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const locationFilter = document.getElementById('locationFilter');
+            locationFilter.value = "";
             
             if (searchTerm.startsWith('حسيني')) {
                 searchTerm = searchTerm.replace('حسيني', '').trim();
             }
 
             if (searchTerm.length < 5) {
-                displayMajlis([]);
+                displayMajlis(originalSessionsData);
                 return;
             }
 
