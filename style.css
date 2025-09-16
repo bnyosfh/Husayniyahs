@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
         
 body {
-    font-family: 'Tajawal', sans-serif;
+    font-family: 'Cairo', sans-serif;
     background-color: #f4f4f9;
     margin: 0;
     padding: 20px;
@@ -23,20 +23,23 @@ body {
     height: auto;
     display: inline-block;
 }
-.search-box {
-    margin-bottom: 20px;
+.filter-box {
+    margin-bottom: 15px;
 }
-#searchInput {
+.search-box {
+    margin-bottom: 10px;
+}
+#locationFilter, #searchInput {
     width: 100%;
     padding: 12px 15px;
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 1em;
-    font-family: 'Tajawal', sans-serif;
+    font-family: 'Cairo', sans-serif;
     text-align: right;
     box-sizing: border-box;
 }
-#searchInput:focus {
+#locationFilter:focus, #searchInput:focus {
     outline: none;
     border-color: #007bff;
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
@@ -50,7 +53,7 @@ body {
     transition: all 0.3s ease;
 }
 #majlis-list {
-    display: none;
+    /* تم إزالة خاصية display: none; هنا */
 }
 .majlis-name-wrapper {
     display: flex;
@@ -212,8 +215,25 @@ body {
     padding: 5px 10px;
     border-radius: 6px;
 }
+.footer-signature {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    text-align: center;
+}
+.signature-logo {
+    max-width: 180px;
+    height: auto;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+.signature-logo:hover {
+    opacity: 1;
+}
 @media (max-width: 600px) {
-    .logo {
-        max-width: 100px; /* يمكنك تغيير القيمة حسب رغبتك */
+    .signature-logo {
+        max-width: 140px;
     }
 }
