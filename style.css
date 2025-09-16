@@ -212,3 +212,8 @@ body {
     padding: 5px 10px;
     border-radius: 6px;
 }
+@media (max-width: 600px) {
+    .logo {
+        max-width: 100px; /* يمكنك تغيير القيمة حسب رغبتك */
+    }
+}
