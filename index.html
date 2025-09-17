@@ -118,6 +118,8 @@
                     berakah: row['berakah'] === 'TRUE',
                     aza: row['aza'] === 'TRUE',
                     women: row['women'] === 'TRUE',
+                    occasion: row['occasion'],
+                    topic: row['topic'],
                 }));
                 
                 allSessionsData.sort((a, b) => {
@@ -156,7 +158,9 @@
                     preacher_photo_url: item.preacher_photo_url,
                     berakah: item.berakah,
                     aza: item.aza,
-                    women: item.women
+                    women: item.women,
+                    occasion: item.occasion,
+                    topic: item.topic,
                 });
                 return acc;
             }, {});
@@ -272,6 +276,8 @@
                     const photo_src = session.preacher_photo_url.trim() ? session.preacher_photo_url : default_photo_url;
                     const displayTime = session.time.trim() ? session.time : '—';
                     
+                    const occasionTitle = session.occasion ? session.occasion : '';
+
                     let sessionNotesHTML = '';
                     const notes = [];
                     if (session.women) {
@@ -290,6 +296,7 @@
 
                     sessionsHTML += `
                         <div class="details-item" data-speaker-name="${session.speaker}">
+                            <div class="session-occasion">${occasionTitle}</div>
                             <div class="top-row">
                                 <div class="preacher-info">
                                     <img src="${photo_src}" alt="صورة الخطيب">
@@ -384,7 +391,8 @@
                     currentPage = i;
                     displayMajlis(totalGroupedMajlis, currentPage);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
-                });
+                }
+                );
                 paginationControls.appendChild(pageBtn);
             }
 
