@@ -1,3 +1,4 @@
+/* تعريف الخطوط */
 @font-face {
     font-family: 'Abar High';
     src: url('AbarHighNoEn-ExtraBold.woff2') format('woff2');
@@ -21,7 +22,7 @@
         
 body {
     font-family: 'Abar Low Regular', sans-serif;
-    background-color: #f4f4f9;
+    background-color: #f9f9f9;
     margin: 0;
     padding: 20px;
     display: flex;
@@ -42,6 +43,8 @@ body {
     max-width: 150px;
     height: auto;
     display: inline-block;
+    box-shadow: none; /* إزالة الظل */
+    background-color: transparent; /* إزالة الخلفية */
 }
 .filter-box {
     margin-bottom: 15px;
@@ -58,11 +61,12 @@ body {
     font-family: 'Abar Low Regular', sans-serif;
     text-align: right;
     box-sizing: border-box;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 #locationFilter:focus, #searchInput:focus {
     outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    border-color: #DA2727;
+    box-shadow: 0 0 0 3px rgba(218, 39, 39, 0.25);
 }
 .majlis-item {
     background-color: #fff;
@@ -103,7 +107,7 @@ body {
 .majlis-location {
     font-family: 'Abar Low', sans-serif;
     font-size: 0.9em;
-    color: #6c757d;
+    color: #888888;
 }
 .icons-wrapper {
     display: flex;
@@ -156,16 +160,22 @@ body {
     background-color: #e9ecef;
     border-radius: 10px;
     padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     margin-bottom: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 .details-item.active {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
+}
+.top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 }
 .preacher-info {
     font-family: 'Abar Low', sans-serif;
@@ -201,6 +211,20 @@ body {
 .preacher-info.centered-preacher + .time-box {
     display: none;
 }
+.session-notes {
+    display: flex;
+    justify-content: center; /* توسيط الملاحظات */
+    gap: 15px;
+    align-items: center;
+    font-family: 'Abar Low Regular', sans-serif;
+    font-size: 0.8em;
+    color: #888888;
+}
+.session-notes span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
 .speaker-details {
     background-color: #f8f9fa;
     border-radius: 10px;
@@ -213,26 +237,27 @@ body {
 .speaker-details.active {
     padding: 15px;
 }
-/* تم تعديل هذا الجزء */
 .speaker-schedule-title {
-    font-family: 'Abar Low', sans-serif; /* تم تحديث الخط */
+    font-family: 'Abar Low', sans-serif;
     font-weight: bold;
     font-size: 0.9em;
     text-align: center;
     padding: 10px 0;
     color: #6c757d;
 }
-/* تم تعديل هذا الجزء */
 .speaker-schedule-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 15px;
     border-top: 1px solid #e9ecef;
-    font-family: 'Abar Low Regular', sans-serif; /* تم تحديث الخط */
+    font-family: 'Abar Low', sans-serif;
+}
+/* الاستثناء */
+.speaker-schedule-400 .speaker-schedule-item {
+    font-family: 'Abar Low Regular', sans-serif;
 }
 .schedule-location {
-    font-family: 'Abar Low', sans-serif;
     font-size: 0.9em;
     color: #495057;
 }
@@ -245,14 +270,13 @@ body {
     padding: 5px 10px;
     border-radius: 6px;
 }
-/* تم إضافة هذا الجزء */
 .speaker-name-in-details {
     font-family: 'Abar Low', sans-serif;
     font-weight: bold;
 }
 .footer-signature {
     text-align: center;
-    margin-top: 40px; /* لإضافة مسافة من المحتوى في الأعلى */
+    margin-top: 40px;
 }
 .signature-logo {
     max-width: 180px;
@@ -274,7 +298,7 @@ body {
     justify-content: center;
     align-items: center;
     margin-top: 20px;
-    gap: 10px; /* Space between buttons */
+    gap: 10px;
 }
 
 .page-btn {
@@ -288,7 +312,7 @@ body {
     font-size: 16px;
     margin: 4px 2px;
     cursor: pointer;
-    border-radius: 50%; /* Makes buttons round */
+    border-radius: 50%;
     width: 40px;
     height: 40px;
     display: flex;
@@ -303,7 +327,7 @@ body {
 }
 
 .page-btn.active {
-    background-color: #DA2727; /* Red color for active page */
+    background-color: #DA2727;
     color: white;
     box-shadow: 0 4px 8px rgba(218, 39, 39, 0.3);
 }
@@ -314,7 +338,6 @@ body {
     box-shadow: none;
 }
 
-/* Style for text buttons (prev/next) */
 .prev-btn, .next-btn {
     border-radius: 20px;
     width: auto;
@@ -326,8 +349,4 @@ body {
 
 .prev-btn:hover, .next-btn:hover {
     background-color: #ddd;
-}
-.speaker-schedule-400 .speaker-schedule-item {
-    font-family: 'Abar Low Regular', sans-serif;
-    font-weight: 400;
 }
