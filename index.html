@@ -4,6 +4,107 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مواعيد المآتم</title>
+    <style>
+        /* CSS الخاص بالملاحظات الجديدة */
+        .details-item {
+            display: flex;
+            flex-direction: column; /* جعل العناصر تتكدس عمودياً */
+            align-items: center; /* توسيط المحتوى أفقياً */
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .details-item .top-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .details-item .preacher-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .details-item .time-box {
+            background-color: #e9ecef;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-weight: bold;
+            color: #495057;
+            white-space: nowrap;
+        }
+
+        .details-item .session-notes {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .details-item .session-notes span {
+            background-color: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .details-item:hover {
+            background-color: #e2e6ea;
+        }
+
+        .speaker-details {
+            display: none; /* إخفاء تفاصيل الخطيب مبدئياً */
+            width: 100%;
+        }
+
+        .speaker-details.active {
+            display: block; /* عرض التفاصيل عند تفعيلها */
+        }
+        
+        /* تنسيقات إضافية لقائمة مجالس الخطيب */
+        .speaker-schedule-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 15px 0;
+            text-align: center;
+            color: #343a40;
+        }
+        
+        .speaker-schedule-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: #f1f1f1;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .schedule-location {
+            font-size: 14px;
+            color: #555;
+            flex-grow: 1;
+            text-align: right;
+            padding-right: 10px;
+        }
+
+        .schedule-time-box {
+            font-weight: bold;
+            color: #007bff;
+            white-space: nowrap;
+        }
+    </style>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -24,6 +125,8 @@
         
         <div id="majlis-list">
         </div>
+        
+        <div id="pagination-controls"></div>
     </div>
     
     <div class="footer-signature">
@@ -33,8 +136,12 @@
     <script>
         const googleSheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRfvjR7IT_AcWbN-1ZyJ1fSfkM4kzV_TmKrjzE7LFvpGhEwm1o_KxNiR38hUyNFkB7B7pqhD5lqH85r/pub?gid=0&single=true&output=csv';
         const listContainer = document.getElementById('majlis-list');
+        const paginationControls = document.getElementById('pagination-controls');
         const default_photo_url = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23ccc'/><path d='M50,57.5c-11.05,0-20,8.95-20,20h40c0-11.05-8.95-20-20-20z' fill='%23aaa'/><circle cx='50' cy='35' r='15' fill='%23aaa'/></svg>";
         
+        const itemsPerPage = 10;
+        let currentPage = 1;
+
         let allSessionsData = [];
         let originalSessionsData = [];
 
@@ -57,18 +164,42 @@
             return now;
         }
 
-        function parseCSV(csv) {
-            const lines = csv.split('\n').filter(line => line.trim() !== '');
-            const headers = lines[0].split(',').map(header => header.trim());
-            const data = lines.slice(1).map(line => {
-                const values = line.split(',');
-                const obj = {};
-                headers.forEach((header, i) => {
-                    obj[header] = values[i];
-                });
-                return obj;
-            });
-            return data.filter(row => row.majlis_name && row.majlis_name.trim() !== '');
+        // دالة جديدة ومحسّنة لقراءة ملفات CSV
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n').map(line => line.trim()).filter(line => line !== '');
+            if (lines.length < 2) return [];
+
+            const headers = lines[0].split(',');
+            const data = [];
+
+            for (let i = 2; i < lines.length; i++) {
+                const row = lines[i];
+                const values = [];
+                let inQuotes = false;
+                let current = '';
+
+                for (let j = 0; j < row.length; j++) {
+                    const char = row[j];
+                    if (char === '"' && (j === 0 || row[j-1] === ',')) {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        values.push(current.trim());
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                values.push(current.trim());
+                
+                if (values.length === headers.length) {
+                    const obj = {};
+                    headers.forEach((header, index) => {
+                        obj[header.trim()] = values[index];
+                    });
+                    data.push(obj);
+                }
+            }
+            return data.filter(row => row['majlis_name'] && row['majlis_name'].trim() !== '');
         }
 
         async function fetchMajlisData() {
@@ -78,18 +209,22 @@
                 const data = parseCSV(csvText);
                 
                 allSessionsData = data.map(row => ({
-                    majlis_name: row.majlis_name,
-                    location_text: row.location_text,
-                    location_url: row.location_url,
-                    speaker: row.preacher,
-                    time: row.time,
-                    preacher_photo_url: row.preacher_photo_url,
+                    majlis_name: row['majlis_name'],
+                    location_text: row['location_text'],
+                    location_url: row['location_url'],
+                    preacher: row['preacher'],
+                    time: row['time'],
+                    preacher_photo_url: row['preacher_photo_url'],
+                    berakah: row['berakah'] === 'TRUE',
+                    aza: row['aza'] === 'TRUE',
+                    women: row['women'] === 'TRUE',
                 }));
                 
                 originalSessionsData = [...allSessionsData];
                 
                 populateLocationFilter();
-                displayMajlis(originalSessionsData);
+                addEventListeners();
+                displayMajlis(originalSessionsData, currentPage);
 
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -110,21 +245,38 @@
                 locationFilter.appendChild(option);
             });
 
-            locationFilter.addEventListener('change', () => {
-                const selectedLocation = locationFilter.value;
-                document.getElementById('searchInput').value = '';
-                if (selectedLocation === '') {
-                    displayMajlis(originalSessionsData);
-                } else {
-                    const filteredData = originalSessionsData.filter(session => session.location_text === selectedLocation);
-                    displayMajlis(filteredData);
-                }
-            });
+            locationFilter.addEventListener('change', filterData);
         }
         
-        function displayMajlis(data) {
-            const now = new Date();
-            const nowInMinutes = now.getHours() * 60 + now.getMinutes();
+        function addEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', filterData);
+            document.getElementById('locationFilter').addEventListener('change', filterData);
+        }
+        
+        function filterData() {
+            let filteredData = [...originalSessionsData];
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const selectedLocation = document.getElementById('locationFilter').value;
+            
+            if (searchTerm) {
+                filteredData = filteredData.filter(session => 
+                    session.majlis_name.toLowerCase().includes(searchTerm) ||
+                    session.preacher.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (selectedLocation) {
+                filteredData = filteredData.filter(session => session.location_text === selectedLocation);
+            }
+            
+            currentPage = 1;
+            displayMajlis(filteredData, currentPage);
+        }
+
+        function displayMajlis(data, page) {
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const paginatedData = data.slice(start, end);
 
             if (data.length > 0) {
                 listContainer.style.display = 'block';
@@ -132,19 +284,22 @@
                 listContainer.style.display = 'none';
             }
 
-            const groupedData = data.reduce((acc, item) => {
+            const groupedData = paginatedData.reduce((acc, item) => {
                 if (!acc[item.majlis_name]) {
                     acc[item.majlis_name] = {
                         name: item.majlis_name,
                         location_text: item.location_text,
                         location_url: item.location_url,
-                        sessions: []
+                        sessions: [],
                     };
                 }
                 acc[item.majlis_name].sessions.push({
-                    speaker: item.speaker,
+                    speaker: item.preacher,
                     time: item.time,
-                    preacher_photo_url: item.preacher_photo_url
+                    preacher_photo_url: item.preacher_photo_url,
+                    berakah: item.berakah,
+                    aza: item.aza,
+                    women: item.women
                 });
                 return acc;
             }, {});
@@ -152,7 +307,7 @@
             const sortedData = Object.values(groupedData);
 
             listContainer.innerHTML = ''; 
-
+            
             sortedData.forEach(item => {
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('majlis-item');
@@ -168,7 +323,7 @@
                 const locationDiv = document.createElement('div');
                 locationDiv.classList.add('majlis-location');
                 locationDiv.textContent = item.location_text;
-
+                
                 textWrapper.appendChild(nameDiv);
                 textWrapper.appendChild(locationDiv);
                 
@@ -200,14 +355,34 @@
                 let sessionsHTML = '';
                 item.sessions.forEach(session => {
                     const photo_src = session.preacher_photo_url.trim() ? session.preacher_photo_url : default_photo_url;
+                    const displayTime = session.time.trim() ? session.time : '—';
                     
+                    let sessionNotesHTML = '';
+                    const notes = [];
+                    if (session.women) {
+                        notes.push(`<span>قسم للنساء</span>`);
+                    }
+                    if (session.aza) {
+                        notes.push(`<span>يوجد عزاء</span>`);
+                    }
+                    if (session.berakah) {
+                        notes.push(`<span>توجد بركة</span>`);
+                    }
+                    
+                    if (notes.length > 0) {
+                        sessionNotesHTML = `<div class="session-notes">${notes.join('')}</div>`;
+                    }
+
                     sessionsHTML += `
                         <div class="details-item" data-speaker-name="${session.speaker}">
-                            <div class="preacher-info">
-                                <img src="${photo_src}" alt="صورة الخطيب">
-                                <span>${session.speaker}</span>
+                            <div class="top-row">
+                                <div class="preacher-info">
+                                    <img src="${photo_src}" alt="صورة الخطيب">
+                                    <span>${session.speaker}</span>
+                                </div>
+                                <div class="time-box">${displayTime}</div>
                             </div>
-                            <div class="time-box">${session.time}</div>
+                            ${sessionNotesHTML}
                         </div>
                         <div class="speaker-details"></div>
                     `;
@@ -236,70 +411,113 @@
                         const speakerName = speakerItem.getAttribute('data-speaker-name');
                         const speakerDetailsDiv = speakerItem.nextElementSibling;
                         const preacherInfo = speakerItem.querySelector('.preacher-info');
-                        const parentDetailsDiv = speakerItem.closest('.majlis-details');
                         
                         const isActive = speakerDetailsDiv.classList.toggle('active');
                         speakerItem.classList.toggle('active');
                         preacherInfo.classList.toggle('centered-preacher');
+
+                        // إخفاء الملاحظات عند الضغط على الخطيب
+                        const notesSection = speakerItem.querySelector('.session-notes');
+                        if (notesSection) {
+                            notesSection.style.display = 'none';
+                        }
                         
                         if (isActive) {
-                             displaySpeakerSchedule(speakerName, speakerDetailsDiv, speakerItem, parentDetailsDiv);
+                             displaySpeakerSchedule(speakerName, speakerDetailsDiv, speakerItem);
                         } else {
                             speakerDetailsDiv.style.maxHeight = '0';
                             speakerDetailsDiv.innerHTML = '';
+                             // إعادة إظهار الملاحظات عند إغلاق التفاصيل
+                            if (notesSection) {
+                                notesSection.style.display = 'flex';
+                            }
                         }
                     });
                 });
             });
+            setupPagination(data.length);
         }
 
-        function displaySpeakerSchedule(speakerName, containerDiv, speakerItem, parentDetailsDiv) {
-            const speakerSessions = allSessionsData.filter(session => session.speaker === speakerName);
+        function setupPagination(totalItems) {
+            paginationControls.innerHTML = '';
+            const pageCount = Math.ceil(totalItems / itemsPerPage);
+
+            if (pageCount <= 1) {
+                return;
+            }
+
+            const prevButton = document.createElement('button');
+            prevButton.textContent = 'السابق';
+            prevButton.classList.add('page-btn', 'prev-btn');
+            prevButton.disabled = currentPage === 1;
+            prevButton.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayMajlis(originalSessionsData, currentPage);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+            paginationControls.appendChild(prevButton);
+
+            for (let i = 1; i <= pageCount; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.textContent = i;
+                pageBtn.classList.add('page-btn');
+                if (i === currentPage) {
+                    pageBtn.classList.add('active');
+                }
+                pageBtn.addEventListener('click', () => {
+                    currentPage = i;
+                    displayMajlis(originalSessionsData, currentPage);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+                );
+                paginationControls.appendChild(pageBtn);
+            }
+
+            const nextButton = document.createElement('button');
+            nextButton.textContent = 'التالي';
+            nextButton.classList.add('page-btn', 'next-btn');
+            nextButton.disabled = currentPage === pageCount;
+            nextButton.addEventListener('click', () => {
+                if (currentPage < pageCount) {
+                    currentPage++;
+                    displayMajlis(originalSessionsData, currentPage);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+            paginationControls.appendChild(nextButton);
+        }
+
+        function displaySpeakerSchedule(speakerName, containerDiv, speakerItem) {
+            const speakerSessions = allSessionsData.filter(session => session.preacher === speakerName);
 
             let scheduleHTML = '';
             scheduleHTML += `<div class="speaker-schedule-title">جميع مجالس ${speakerName}</div>`;
             
             speakerSessions.forEach(session => {
+                const displayTime = session.time.trim() ? session.time : '—';
                 scheduleHTML += `
                     <div class="speaker-schedule-item">
                         <div class="schedule-location">${session.majlis_name} - ${session.location_text}</div>
-                        <div class="schedule-time-box">${session.time}</div>
+                        <div class="schedule-time-box">${displayTime}</div>
                     </div>
                 `;
             });
             
             containerDiv.innerHTML = scheduleHTML;
             containerDiv.style.maxHeight = containerDiv.scrollHeight + 'px';
-
+            
+            // تحديث ارتفاع الحاوية الرئيسية
+            const parentDetailsDiv = speakerItem.closest('.majlis-details');
             if (parentDetailsDiv) {
                  parentDetailsDiv.style.maxHeight = parentDetailsDiv.scrollHeight + containerDiv.scrollHeight + "px";
             }
         }
-
-        function filterMajlis() {
-            let searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-            const locationFilter = document.getElementById('locationFilter');
-            locationFilter.value = "";
-            
-            if (searchTerm.startsWith('حسيني')) {
-                searchTerm = searchTerm.replace('حسيني', '').trim();
-            }
-
-            if (searchTerm.length < 5) {
-                displayMajlis(originalSessionsData);
-                return;
-            }
-
-            const filteredData = originalSessionsData.filter(session => {
-                return session.majlis_name.toLowerCase().includes(searchTerm) ||
-                       session.speaker.toLowerCase().includes(searchTerm);
-            });
-
-            displayMajlis(filteredData);
-        }
-
-        document.getElementById('searchInput').addEventListener('input', filterMajlis);
-
+        
+        document.getElementById('searchInput').addEventListener('input', filterData);
+        document.getElementById('locationFilter').addEventListener('change', filterData);
+        
         fetchMajlisData();
     </script>
 </body>
