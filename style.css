@@ -350,3 +350,84 @@ body {
 .prev-btn:hover, .next-btn:hover {
     background-color: #ddd;
 }
+/* --- أكواد لجعل الموقع متوافقاً مع الجوالات --- */
+/* Media Query for mobile devices */
+@media (max-width: 600px) {
+    
+    body {
+        padding: 10px; /* تقليل المساحة الهامشية على الجوال */
+    }
+
+    .container {
+        padding: 0; /* إزالة الحشوة الداخلية */
+    }
+
+    .logo {
+        max-width: 120px; /* تصغير حجم الشعار */
+    }
+
+    #searchInput,
+    #locationFilter {
+        font-size: 0.9em; /* تصغير حجم الخط في مربعات البحث */
+        padding: 10px 12px;
+    }
+
+    .majlis-item {
+        margin-bottom: 10px; /* تقليل المسافة بين العناصر */
+    }
+
+    .majlis-name-wrapper {
+        padding: 15px; /* تقليل الحشوة الداخلية لاسم المأتم */
+    }
+
+    .majlis-name {
+        font-size: 1.1em; /* تصغير حجم خط اسم المأتم */
+    }
+    
+    .majlis-location {
+        font-size: 0.8em; /* تصغير حجم خط الموقع */
+    }
+
+    .preacher-info {
+        gap: 10px; /* تقليل المسافة بين صورة الخطيب واسمه */
+        font-size: 0.9em;
+    }
+
+    .preacher-info img {
+        width: 40px; /* تصغير حجم صورة الخطيب */
+        height: 40px;
+    }
+    
+    .time-box {
+        padding: 6px 10px; /* تصغير حجم مربع الوقت */
+        font-size: 0.8em;
+    }
+
+    .session-notes {
+        font-size: 0.75em; /* تصغير حجم خط الملاحظات */
+    }
+    
+    .speaker-schedule-item {
+        padding: 8px 10px; /* تعديل حشوة جدول الخطيب */
+    }
+    
+    .schedule-location {
+        font-size: 0.8em; /* تصغير حجم خط موقع الجدول */
+    }
+    
+    .schedule-time-box {
+        font-size: 0.7em; /* تصغير حجم خط وقت الجدول */
+    }
+
+    /* تعديل تصميم أزرار التنقل بين الصفحات */
+    .page-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+    }
+    
+    .prev-btn, .next-btn {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+}
