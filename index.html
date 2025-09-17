@@ -4,107 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مواعيد المآتم</title>
-    <style>
-        /* CSS الخاص بالملاحظات الجديدة */
-        .details-item {
-            display: flex;
-            flex-direction: column; /* جعل العناصر تتكدس عمودياً */
-            align-items: center; /* توسيط المحتوى أفقياً */
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        
-        .details-item .top-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        .details-item .preacher-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .details-item .time-box {
-            background-color: #e9ecef;
-            border-radius: 5px;
-            padding: 5px 10px;
-            font-weight: bold;
-            color: #495057;
-            white-space: nowrap;
-        }
-
-        .details-item .session-notes {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .details-item .session-notes span {
-            background-color: #e9ecef;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 14px;
-            color: #6c757d;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .details-item:hover {
-            background-color: #e2e6ea;
-        }
-
-        .speaker-details {
-            display: none; /* إخفاء تفاصيل الخطيب مبدئياً */
-            width: 100%;
-        }
-
-        .speaker-details.active {
-            display: block; /* عرض التفاصيل عند تفعيلها */
-        }
-        
-        /* تنسيقات إضافية لقائمة مجالس الخطيب */
-        .speaker-schedule-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 15px 0;
-            text-align: center;
-            color: #343a40;
-        }
-        
-        .speaker-schedule-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 15px;
-            background-color: #f1f1f1;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        
-        .schedule-location {
-            font-size: 14px;
-            color: #555;
-            flex-grow: 1;
-            text-align: right;
-            padding-right: 10px;
-        }
-
-        .schedule-time-box {
-            font-weight: bold;
-            color: #007bff;
-            white-space: nowrap;
-        }
-    </style>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -164,7 +63,6 @@
             return now;
         }
 
-        // دالة جديدة ومحسّنة لقراءة ملفات CSV
         function parseCSV(csvText) {
             const lines = csvText.split('\n').map(line => line.trim()).filter(line => line !== '');
             if (lines.length < 2) return [];
@@ -220,6 +118,12 @@
                     women: row['women'] === 'TRUE',
                 }));
                 
+                allSessionsData.sort((a, b) => {
+                    const timeA = parseTime(a.time);
+                    const timeB = parseTime(b.time);
+                    return timeA - timeB;
+                });
+
                 originalSessionsData = [...allSessionsData];
                 
                 populateLocationFilter();
@@ -316,6 +220,8 @@
                 nameWrapper.classList.add('majlis-name-wrapper');
                 
                 const textWrapper = document.createElement('div');
+                textWrapper.classList.add('text-wrapper');
+
                 const nameDiv = document.createElement('div');
                 nameDiv.classList.add('majlis-name');
                 nameDiv.textContent = item.name;
@@ -416,7 +322,6 @@
                         speakerItem.classList.toggle('active');
                         preacherInfo.classList.toggle('centered-preacher');
 
-                        // إخفاء الملاحظات عند الضغط على الخطيب
                         const notesSection = speakerItem.querySelector('.session-notes');
                         if (notesSection) {
                             notesSection.style.display = 'none';
@@ -427,7 +332,6 @@
                         } else {
                             speakerDetailsDiv.style.maxHeight = '0';
                             speakerDetailsDiv.innerHTML = '';
-                             // إعادة إظهار الملاحظات عند إغلاق التفاصيل
                             if (notesSection) {
                                 notesSection.style.display = 'flex';
                             }
@@ -453,7 +357,7 @@
             prevButton.addEventListener('click', () => {
                 if (currentPage > 1) {
                     currentPage--;
-                    displayMajlis(originalSessionsData, currentPage);
+                    filterData();
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             });
@@ -468,10 +372,9 @@
                 }
                 pageBtn.addEventListener('click', () => {
                     currentPage = i;
-                    displayMajlis(originalSessionsData, currentPage);
+                    filterData();
                     window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
-                );
+                });
                 paginationControls.appendChild(pageBtn);
             }
 
@@ -482,7 +385,7 @@
             nextButton.addEventListener('click', () => {
                 if (currentPage < pageCount) {
                     currentPage++;
-                    displayMajlis(originalSessionsData, currentPage);
+                    filterData();
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             });
@@ -496,12 +399,11 @@
             scheduleHTML += `<div class="speaker-schedule-title">جميع مجالس ${speakerName}</div>`;
             
             let speakerScheduleClass = '';
-            // قم بتغيير 'اسم الخطيب' بالاسم الذي تريد
             if (speakerName === 'الشيخ حسن منصور') { 
                 speakerScheduleClass = 'speaker-schedule-400';
             }
 
-            scheduleHTML += `<div class="${speakerScheduleClass}">`; // أضف الحاوية الجديدة
+            scheduleHTML += `<div class="${speakerScheduleClass}">`;
             
             speakerSessions.forEach(session => {
                 const displayTime = session.time.trim() ? session.time : '—';
@@ -512,13 +414,12 @@
                     </div>
                 `;
             });
-
-            scheduleHTML += `</div>`; // إغلاق الحاوية
             
+            scheduleHTML += `</div>`;
+
             containerDiv.innerHTML = scheduleHTML;
             containerDiv.style.maxHeight = containerDiv.scrollHeight + 'px';
             
-            // تحديث ارتفاع الحاوية الرئيسية
             const parentDetailsDiv = speakerItem.closest('.majlis-details');
             if (parentDetailsDiv) {
                  parentDetailsDiv.style.maxHeight = parentDetailsDiv.scrollHeight + containerDiv.scrollHeight + "px";
