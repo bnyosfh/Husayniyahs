@@ -109,6 +109,14 @@ body {
     font-size: 0.9em;
     color: #888888;
 }
+.session-occasion {
+    font-family: 'Abar low', sans-serif;
+    font-size: 1em;
+    font-weight: lighter;
+    color: #007bff;
+    text-align: center;
+    margin-bottom: -9px;
+}
 .icons-wrapper {
     display: flex;
     align-items: center;
@@ -350,6 +358,11 @@ body {
 .prev-btn:hover, .next-btn:hover {
     background-color: #ddd;
 }
+/* تعديل المسافة السفلية للقائمة لتبدو متناسقة */
+.majlis-name-wrapper.active + .majlis-details {
+    padding-bottom: 5px;
+}
+
 /* --- أكواد لجعل الموقع متوافقاً مع الجوالات --- */
 /* Media Query for mobile devices */
 @media (max-width: 600px) {
@@ -387,7 +400,9 @@ body {
     .majlis-location {
         font-size: 0.8em;
     }
-
+    .session-occasion {
+        font-size: 0.9em;
+    }
     .preacher-info {
         gap: 10px;
         font-size: 0.9em;
