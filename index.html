@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مواعيد المآتم</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
@@ -363,7 +364,7 @@
             setupPagination(data.length);
         }
 
-        // دالة لإنشاء أزرار الصفحات
+     // دالة لإنشاء أزرار الصفحات
         function setupPagination(totalItems) {
             paginationControls.innerHTML = '';
             const pageCount = Math.ceil(totalItems / itemsPerPage);
@@ -373,7 +374,8 @@
             }
 
             const prevButton = document.createElement('button');
-            prevButton.textContent = 'السابق';
+            // هنا تم عكس الأيقونات
+            prevButton.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
             prevButton.classList.add('page-btn', 'prev-btn');
             prevButton.disabled = currentPage === 1;
             prevButton.addEventListener('click', () => {
@@ -402,7 +404,8 @@
             }
 
             const nextButton = document.createElement('button');
-            nextButton.textContent = 'التالي';
+            // هنا تم عكس الأيقونات
+            nextButton.innerHTML = '<i class="fa-solid fa-angle-left"></i>';
             nextButton.classList.add('page-btn', 'next-btn');
             nextButton.disabled = currentPage === pageCount;
             nextButton.addEventListener('click', () => {
