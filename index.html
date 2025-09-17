@@ -38,11 +38,13 @@
         const paginationControls = document.getElementById('pagination-controls');
         const default_photo_url = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23ccc'/><path d='M50,57.5c-11.05,0-20,8.95-20,20h40c0-11.05-8.95-20-20-20z' fill='%23aaa'/><circle cx='50' cy='35' r='15' fill='%23aaa'/></svg>";
         
-        const itemsPerPage = 10;
-        let currentPage = 1;
-
         let allSessionsData = [];
         let originalSessionsData = [];
+        
+        const itemsPerPage = 10;
+        let currentPage = 1;
+        
+        let totalGroupedMajlis = [];
 
         function parseTime(timeString) {
             const now = new Date();
@@ -125,15 +127,41 @@
                 });
 
                 originalSessionsData = [...allSessionsData];
+                totalGroupedMajlis = groupMajlis(originalSessionsData);
                 
                 populateLocationFilter();
                 addEventListeners();
-                displayMajlis(originalSessionsData, currentPage);
+                displayMajlis(totalGroupedMajlis, currentPage);
 
             } catch (error) {
                 console.error("Error fetching data:", error);
                 listContainer.innerHTML = "<p style='text-align:center;'>عذراً، لم نتمكن من جلب البيانات. تأكد من صحة الرابط وأسماء الأعمدة.</p>";
             }
+        }
+        
+        function groupMajlis(data) {
+            const groupedData = data.reduce((acc, item) => {
+                const majlisKey = item.majlis_name + item.location_text;
+                if (!acc[majlisKey]) {
+                    acc[majlisKey] = {
+                        name: item.majlis_name,
+                        location_text: item.location_text,
+                        location_url: item.location_url,
+                        sessions: [],
+                    };
+                }
+                acc[majlisKey].sessions.push({
+                    speaker: item.preacher,
+                    time: item.time,
+                    preacher_photo_url: item.preacher_photo_url,
+                    berakah: item.berakah,
+                    aza: item.aza,
+                    women: item.women
+                });
+                return acc;
+            }, {});
+            
+            return Object.values(groupedData);
         }
 
         function populateLocationFilter() {
@@ -148,16 +176,21 @@
                 option.textContent = location;
                 locationFilter.appendChild(option);
             });
-
-            locationFilter.addEventListener('change', filterData);
         }
         
         function addEventListeners() {
-            document.getElementById('searchInput').addEventListener('input', filterData);
-            document.getElementById('locationFilter').addEventListener('change', filterData);
+            document.getElementById('searchInput').addEventListener('input', filterAndDisplay);
+            document.getElementById('locationFilter').addEventListener('change', filterAndDisplay);
         }
         
-        function filterData() {
+        function filterAndDisplay() {
+            const filteredData = getFilteredData();
+            totalGroupedMajlis = groupMajlis(filteredData);
+            currentPage = 1;
+            displayMajlis(totalGroupedMajlis, currentPage);
+        }
+
+        function getFilteredData() {
             let filteredData = [...originalSessionsData];
             const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
             const selectedLocation = document.getElementById('locationFilter').value;
@@ -172,9 +205,7 @@
             if (selectedLocation) {
                 filteredData = filteredData.filter(session => session.location_text === selectedLocation);
             }
-            
-            currentPage = 1;
-            displayMajlis(filteredData, currentPage);
+            return filteredData;
         }
 
         function displayMajlis(data, page) {
@@ -188,31 +219,9 @@
                 listContainer.style.display = 'none';
             }
 
-            const groupedData = paginatedData.reduce((acc, item) => {
-                if (!acc[item.majlis_name]) {
-                    acc[item.majlis_name] = {
-                        name: item.majlis_name,
-                        location_text: item.location_text,
-                        location_url: item.location_url,
-                        sessions: [],
-                    };
-                }
-                acc[item.majlis_name].sessions.push({
-                    speaker: item.preacher,
-                    time: item.time,
-                    preacher_photo_url: item.preacher_photo_url,
-                    berakah: item.berakah,
-                    aza: item.aza,
-                    women: item.women
-                });
-                return acc;
-            }, {});
-
-            const sortedData = Object.values(groupedData);
-
             listContainer.innerHTML = ''; 
             
-            sortedData.forEach(item => {
+            paginatedData.forEach(item => {
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('majlis-item');
 
@@ -358,7 +367,7 @@
             prevButton.addEventListener('click', () => {
                 if (currentPage > 1) {
                     currentPage--;
-                    filterData();
+                    displayMajlis(totalGroupedMajlis, currentPage);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             });
@@ -373,7 +382,7 @@
                 }
                 pageBtn.addEventListener('click', () => {
                     currentPage = i;
-                    filterData();
+                    displayMajlis(totalGroupedMajlis, currentPage);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 });
                 paginationControls.appendChild(pageBtn);
@@ -386,7 +395,7 @@
             nextButton.addEventListener('click', () => {
                 if (currentPage < pageCount) {
                     currentPage++;
-                    filterData();
+                    displayMajlis(totalGroupedMajlis, currentPage);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             });
@@ -426,9 +435,6 @@
                  parentDetailsDiv.style.maxHeight = parentDetailsDiv.scrollHeight + containerDiv.scrollHeight + "px";
             }
         }
-        
-        document.getElementById('searchInput').addEventListener('input', filterData);
-        document.getElementById('locationFilter').addEventListener('change', filterData);
         
         fetchMajlisData();
     </script>
