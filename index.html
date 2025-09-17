@@ -41,7 +41,8 @@
         let allSessionsData = [];
         let originalSessionsData = [];
         
-        const itemsPerPage = 10;
+        // عدد العناصر في كل صفحة
+        const itemsPerPage = 10; 
         let currentPage = 1;
         
         let totalGroupedMajlis = [];
@@ -190,7 +191,8 @@
         function filterAndDisplay() {
             const filteredData = getFilteredData();
             totalGroupedMajlis = groupMajlis(filteredData);
-            currentPage = 1;
+            // إعادة تعيين الصفحة إلى 1 عند تغيير الفلتر
+            currentPage = 1; 
             displayMajlis(totalGroupedMajlis, currentPage);
         }
 
@@ -212,6 +214,7 @@
             return filteredData;
         }
 
+        // دالة لعرض المجالس بناءً على رقم الصفحة
         function displayMajlis(data, page) {
             const start = (page - 1) * itemsPerPage;
             const end = start + itemsPerPage;
@@ -356,9 +359,11 @@
                 });
             });
 
+            // استدعاء دالة عرض أزرار الصفحات
             setupPagination(data.length);
         }
 
+        // دالة لإنشاء أزرار الصفحات
         function setupPagination(totalItems) {
             paginationControls.innerHTML = '';
             const pageCount = Math.ceil(totalItems / itemsPerPage);
