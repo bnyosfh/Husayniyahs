@@ -65,7 +65,7 @@ body {
 }
 #locationFilter:focus, #searchInput:focus {
     outline: none;
-    border-color: #DA2727;
+    border-color: #da2727;
     box-shadow: 0 0 0 3px rgba(218, 39, 39, 0.25);
 }
 .majlis-item {
@@ -89,7 +89,7 @@ body {
 .majlis-name-wrapper.active {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
-    background-color: #f8f9fa;
+    background-color: #ffffff;
 }
 .text-wrapper {
     display: flex;
@@ -201,12 +201,12 @@ body {
 .time-box {
     font-family: 'Abar High', sans-serif;
     padding: 8px 15px;
-    background-color: #ffc107;
+    background-color: #ffffff78;
     border-radius: 8px;
     font-weight: bold;
-    color: #343a40;
+    color: #1c1c1cd3;
     white-space: nowrap;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 42, 255, 0.072);
     transition: all 0.3s ease;
 }
 .preacher-info.centered-preacher + .time-box {
