@@ -1,11 +1,31 @@
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+@font-face {
+    font-family: 'Abar High';
+    src: url('AbarHighNoEn-ExtraBold.woff2') format('woff2');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Abar Low';
+    src: url('AbarLowNoEn-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Abar Low Regular';
+    src: url('AbarLowNoEn-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
         
 body {
-    font-family: 'Cairo', sans-serif;
+    font-family: 'Abar Low Regular', sans-serif;
     background-color: #f4f4f9;
     margin: 0;
     padding: 20px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
@@ -35,7 +55,7 @@ body {
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 1em;
-    font-family: 'Cairo', sans-serif;
+    font-family: 'Abar Low Regular', sans-serif;
     text-align: right;
     box-sizing: border-box;
 }
@@ -69,19 +89,21 @@ body {
 }
 .text-wrapper {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 8px;
+    align-items: flex-start;
 }
 .majlis-name {
+    font-family: 'Abar High', sans-serif;
     font-size: 1.2em;
     font-weight: bold;
     color: #343a40;
     margin-right: auto;
 }
 .majlis-location {
+    font-family: 'Abar Low', sans-serif;
     font-size: 0.9em;
     color: #6c757d;
-    margin-top: 5px;
 }
 .icons-wrapper {
     display: flex;
@@ -146,6 +168,7 @@ body {
     border-bottom-right-radius: 0;
 }
 .preacher-info {
+    font-family: 'Abar Low', sans-serif;
     display: flex;
     align-items: center;
     gap: 15px;
@@ -165,6 +188,7 @@ body {
     object-fit: cover;
 }
 .time-box {
+    font-family: 'Abar Low Regular', sans-serif;
     padding: 8px 15px;
     background-color: #fff;
     border-radius: 8px;
@@ -190,6 +214,7 @@ body {
     padding: 15px;
 }
 .speaker-schedule-title {
+    font-family: 'Abar High', sans-serif;
     font-weight: bold;
     font-size: 0.9em;
     text-align: center;
@@ -204,10 +229,12 @@ body {
     border-top: 1px solid #e9ecef;
 }
 .schedule-location {
+    font-family: 'Abar Low', sans-serif;
     font-size: 0.9em;
     color: #495057;
 }
 .schedule-time-box {
+    font-family: 'Abar Low Regular', sans-serif;
     font-size: 0.8em;
     font-weight: bold;
     color: #007bff;
@@ -216,12 +243,8 @@ body {
     border-radius: 6px;
 }
 .footer-signature {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
     text-align: center;
+    margin-top: 40px; /* لإضافة مسافة من المحتوى في الأعلى */
 }
 .signature-logo {
     max-width: 180px;
