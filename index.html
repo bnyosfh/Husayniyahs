@@ -266,13 +266,13 @@
                     let sessionNotesHTML = '';
                     const notes = [];
                     if (session.women) {
-                        notes.push(`<span>قسم للنساء</span>`);
+                        notes.push(`<span>🧕🏼 قسم للنساء</span>`);
                     }
                     if (session.aza) {
-                        notes.push(`<span>يوجد عزاء</span>`);
+                        notes.push(`<span>⚫️ يوجد عزاء</span>`);
                     }
                     if (session.berakah) {
-                        notes.push(`<span>توجد بركة</span>`);
+                        notes.push(`<span>🍲 توجد بركة</span>`);
                     }
                     
                     if (notes.length > 0) {
@@ -339,6 +339,7 @@
                     });
                 });
             });
+
             setupPagination(data.length);
         }
 
