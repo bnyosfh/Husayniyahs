@@ -495,6 +495,14 @@
             let scheduleHTML = '';
             scheduleHTML += `<div class="speaker-schedule-title">جميع مجالس ${speakerName}</div>`;
             
+            let speakerScheduleClass = '';
+            // قم بتغيير 'اسم الخطيب' بالاسم الذي تريد
+            if (speakerName === 'الشيخ حسن منصور') { 
+                speakerScheduleClass = 'speaker-schedule-400';
+            }
+
+            scheduleHTML += `<div class="${speakerScheduleClass}">`; // أضف الحاوية الجديدة
+            
             speakerSessions.forEach(session => {
                 const displayTime = session.time.trim() ? session.time : '—';
                 scheduleHTML += `
@@ -504,6 +512,8 @@
                     </div>
                 `;
             });
+
+            scheduleHTML += `</div>`; // إغلاق الحاوية
             
             containerDiv.innerHTML = scheduleHTML;
             containerDiv.style.maxHeight = containerDiv.scrollHeight + 'px';
