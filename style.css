@@ -43,8 +43,8 @@ body {
     max-width: 150px;
     height: auto;
     display: inline-block;
-    box-shadow: none; /* إزالة الظل */
-    background-color: transparent; /* إزالة الخلفية */
+    box-shadow: none;
+    background-color: transparent;
 }
 .filter-box {
     margin-bottom: 15px;
@@ -158,14 +158,15 @@ body {
 }
 .details-item {
     background-color: #e9ecef;
-    border-radius: 10px;
-    padding: 15px;
-    margin-bottom: 10px;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 .details-item.active {
     border-bottom-left-radius: 0;
@@ -198,14 +199,14 @@ body {
     object-fit: cover;
 }
 .time-box {
-    font-family: 'Abar Low Regular', sans-serif;
+    font-family: 'Abar High', sans-serif;
     padding: 8px 15px;
-    background-color: #fff;
+    background-color: #ffc107;
     border-radius: 8px;
     font-weight: bold;
-    color: #28a745;
+    color: #343a40;
     white-space: nowrap;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     transition: all 0.3s ease;
 }
 .preacher-info.centered-preacher + .time-box {
@@ -213,12 +214,16 @@ body {
 }
 .session-notes {
     display: flex;
-    justify-content: center; /* توسيط الملاحظات */
-    gap: 15px;
+    justify-content: center;
+    gap: 20px;
     align-items: center;
-    font-family: 'Abar Low Regular', sans-serif;
-    font-size: 0.8em;
-    color: #888888;
+    font-family: 'Abar Low', sans-serif;
+    font-size: 0.9em;
+    color: #555;
+    background-color: #f1f1f1;
+    padding: 8px 15px;
+    border-radius: 8px;
+    border: 1px dashed #ddd;
 }
 .session-notes span {
     display: flex;
@@ -287,11 +292,6 @@ body {
 .signature-logo:hover {
     opacity: 1;
 }
-@media (max-width: 600px) {
-    .signature-logo {
-        max-width: 140px;
-    }
-}
 /* Style for pagination buttons */
 #pagination-controls {
     display: flex;
@@ -355,71 +355,70 @@ body {
 @media (max-width: 600px) {
     
     body {
-        padding: 10px; /* تقليل المساحة الهامشية على الجوال */
+        padding: 10px;
     }
 
     .container {
-        padding: 0; /* إزالة الحشوة الداخلية */
+        padding: 0;
     }
 
     .logo {
-        max-width: 120px; /* تصغير حجم الشعار */
+        max-width: 120px;
     }
 
     #searchInput,
     #locationFilter {
-        font-size: 0.9em; /* تصغير حجم الخط في مربعات البحث */
+        font-size: 0.9em;
         padding: 10px 12px;
     }
 
     .majlis-item {
-        margin-bottom: 10px; /* تقليل المسافة بين العناصر */
+        margin-bottom: 10px;
     }
 
     .majlis-name-wrapper {
-        padding: 15px; /* تقليل الحشوة الداخلية لاسم المأتم */
+        padding: 15px;
     }
 
     .majlis-name {
-        font-size: 1.1em; /* تصغير حجم خط اسم المأتم */
+        font-size: 1.1em;
     }
     
     .majlis-location {
-        font-size: 0.8em; /* تصغير حجم خط الموقع */
+        font-size: 0.8em;
     }
 
     .preacher-info {
-        gap: 10px; /* تقليل المسافة بين صورة الخطيب واسمه */
+        gap: 10px;
         font-size: 0.9em;
     }
 
     .preacher-info img {
-        width: 40px; /* تصغير حجم صورة الخطيب */
+        width: 40px;
         height: 40px;
     }
     
     .time-box {
-        padding: 6px 10px; /* تصغير حجم مربع الوقت */
+        padding: 6px 10px;
         font-size: 0.8em;
     }
 
     .session-notes {
-        font-size: 0.75em; /* تصغير حجم خط الملاحظات */
+        font-size: 0.75em;
     }
     
     .speaker-schedule-item {
-        padding: 8px 10px; /* تعديل حشوة جدول الخطيب */
+        padding: 8px 10px;
     }
     
     .schedule-location {
-        font-size: 0.8em; /* تصغير حجم خط موقع الجدول */
+        font-size: 0.8em;
     }
     
     .schedule-time-box {
-        font-size: 0.7em; /* تصغير حجم خط وقت الجدول */
+        font-size: 0.7em;
     }
 
-    /* تعديل تصميم أزرار التنقل بين الصفحات */
     .page-btn {
         width: 35px;
         height: 35px;
