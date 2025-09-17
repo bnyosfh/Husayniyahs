@@ -213,20 +213,23 @@ body {
 .speaker-details.active {
     padding: 15px;
 }
+/* تم تعديل هذا الجزء */
 .speaker-schedule-title {
-    font-family: 'Abar High', sans-serif;
+    font-family: 'Abar Low', sans-serif; /* تم تحديث الخط */
     font-weight: bold;
     font-size: 0.9em;
     text-align: center;
     padding: 10px 0;
     color: #6c757d;
 }
+/* تم تعديل هذا الجزء */
 .speaker-schedule-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 15px;
     border-top: 1px solid #e9ecef;
+    font-family: 'Abar Low Regular', sans-serif; /* تم تحديث الخط */
 }
 .schedule-location {
     font-family: 'Abar Low', sans-serif;
@@ -241,6 +244,11 @@ body {
     background-color: #e9f5ff;
     padding: 5px 10px;
     border-radius: 6px;
+}
+/* تم إضافة هذا الجزء */
+.speaker-name-in-details {
+    font-family: 'Abar Low', sans-serif;
+    font-weight: bold;
 }
 .footer-signature {
     text-align: center;
@@ -318,4 +326,8 @@ body {
 
 .prev-btn:hover, .next-btn:hover {
     background-color: #ddd;
+}
+.speaker-schedule-400 .speaker-schedule-item {
+    font-family: 'Abar Low Regular', sans-serif;
+    font-weight: 400;
 }
