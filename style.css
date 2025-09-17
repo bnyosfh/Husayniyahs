@@ -260,3 +260,62 @@ body {
         max-width: 140px;
     }
 }
+/* Style for pagination buttons */
+#pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    gap: 10px; /* Space between buttons */
+}
+
+.page-btn {
+    background-color: #f1f1f1;
+    border: none;
+    color: #555;
+    padding: 10px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 50%; /* Makes buttons round */
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.page-btn:hover {
+    background-color: #ddd;
+}
+
+.page-btn.active {
+    background-color: #DA2727; /* Red color for active page */
+    color: white;
+    box-shadow: 0 4px 8px rgba(218, 39, 39, 0.3);
+}
+
+.page-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Style for text buttons (prev/next) */
+.prev-btn, .next-btn {
+    border-radius: 20px;
+    width: auto;
+    padding: 10px 20px;
+    font-weight: bold;
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+.prev-btn:hover, .next-btn:hover {
+    background-color: #ddd;
+}
