@@ -346,13 +346,20 @@ body {
     box-shadow: none;
 }
 
+/* تعديل هنا */
 .prev-btn, .next-btn {
-    border-radius: 40px;
-    width: auto;
-    padding: 10px 20px;
+    border-radius: 50%; /* لجعلها دائرية بالكامل */
+    width: 50px; /* لضمان حجم مربع متناسق */
+    height: 50px; /* لضمان حجم مربع متناسق */
+    padding: 0; /* إزالة الحشوة الداخلية */
+    font-size: 24px; /* زيادة حجم السهم */
     font-weight: bold;
-    background-color: #e9ecef;
-    color: #495057;
+    background-color: #f1f1f1; /* لون الخلفية */
+    color: #555; /* لون السهم */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* إضافة ظل خفيف */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .prev-btn:hover, .next-btn:hover {
@@ -441,7 +448,11 @@ body {
     }
     
     .prev-btn, .next-btn {
-        padding: 8px 15px;
-        font-size: 14px;
+        padding: 0;
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+        background-color: #f1f1f1;
+        color: #555;
     }
 }
