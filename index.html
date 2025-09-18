@@ -342,19 +342,22 @@
                         speakerItem.classList.toggle('active');
                         preacherInfo.classList.toggle('centered-preacher');
 
+                        // إخفاء العناصر عند فتح بطاقة الخطيب
+                        const occasionTitle = speakerItem.querySelector('.session-occasion');
+                        const timeBox = speakerItem.querySelector('.time-box');
                         const notesSection = speakerItem.querySelector('.session-notes');
-                        if (notesSection) {
-                            notesSection.style.display = 'none';
-                        }
-                        
+
                         if (isActive) {
+                             if (occasionTitle) occasionTitle.style.display = 'none';
+                             if (timeBox) timeBox.style.display = 'none';
+                             if (notesSection) notesSection.style.display = 'none';
                              displaySpeakerSchedule(speakerName, speakerDetailsDiv, speakerItem);
                         } else {
+                            if (occasionTitle) occasionTitle.style.display = '';
+                            if (timeBox) timeBox.style.display = '';
+                            if (notesSection) notesSection.style.display = '';
                             speakerDetailsDiv.style.maxHeight = '0';
                             speakerDetailsDiv.innerHTML = '';
-                            if (notesSection) {
-                                notesSection.style.display = 'flex';
-                            }
                         }
                     });
                 });
