@@ -109,8 +109,15 @@
                 const response = await fetch(googleSheetURL);
                 const csvText = await response.text();
                 const data = parseCSV(csvText);
+
+                // قم بتصفية البيانات بناءً على العمود "publishing"
+                // المجالس التي سيتم عرضها هي "نشر" و "مخفي"
+                const filteredData = data.filter(row => {
+                    const status = row['publishing'].trim();
+                    return status === 'نشر' || status === 'مخفي';
+                });
                 
-                allSessionsData = data.map(row => ({
+                allSessionsData = filteredData.map(row => ({
                     majlis_name: row['majlis_name'],
                     location_text: row['location_text'],
                     location_url: row['location_url'],
@@ -122,6 +129,7 @@
                     women: row['women'] === 'TRUE',
                     occasion: row['occasion'],
                     topic: row['topic'],
+                    publishing_status: row['publishing'].trim(),
                 }));
                 
                 allSessionsData.sort((a, b) => {
@@ -198,21 +206,26 @@
         }
 
         function getFilteredData() {
-            let filteredData = [...originalSessionsData];
+            let filteredData = [...allSessionsData];
             const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
             const selectedLocation = document.getElementById('locationFilter').value;
             
+            // تصفية إضافية لإخفاء المجالس "المخفية" في العرض الأساسي
+            let finalData = filteredData.filter(session => session.publishing_status !== 'مخفي');
+        
             if (searchTerm) {
-                filteredData = filteredData.filter(session => 
+                // إذا كان هناك بحث، يتم البحث في المجالس "المنشورة" و "المخفية"
+                finalData = filteredData.filter(session => 
                     session.majlis_name.toLowerCase().includes(searchTerm) ||
                     session.preacher.toLowerCase().includes(searchTerm)
                 );
             }
-
+        
             if (selectedLocation) {
-                filteredData = filteredData.filter(session => session.location_text === selectedLocation);
+                finalData = finalData.filter(session => session.location_text === selectedLocation);
             }
-            return filteredData;
+            
+            return finalData;
         }
 
         // دالة لعرض المجالس بناءً على رقم الصفحة
