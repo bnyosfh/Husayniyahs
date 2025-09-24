@@ -420,6 +420,11 @@ body {
 
 /* Media Queries */
 @media (max-width: 600px) {
+    /* ... كود آخر ... */
+    .signature-logo {
+        max-width: 100px;
+    }
+}
     body {
         padding: 10px;
     }
