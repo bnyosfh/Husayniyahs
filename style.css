@@ -1,4 +1,4 @@
-/* Font Definitions */
+/* تعريف الخطوط */
 @font-face {
     font-family: 'Abar High';
     font-style: normal;
@@ -20,7 +20,7 @@
     src: url('AbarLowNoEn-Regular.woff2') format('woff2');
 }
 
-/* Body and Layout */
+/* الجسم والتخطيط */
 body {
     align-items: center;
     background-color: #f9f9f9;
@@ -38,7 +38,7 @@ body {
     width: 100%;
 }
 
-/* Logo and Filters */
+/* الشعار وفلاتر البحث */
 .logo-container {
     margin-bottom: 20px;
     text-align: center;
@@ -80,9 +80,8 @@ body {
     outline: none;
 }
 
-/* Majlis Items */
+/* عناصر المجالس */
 #majlis-list {
-    /* `display: none;` was removed as per original comment. */
 }
 
 .majlis-item {
@@ -178,10 +177,10 @@ body {
 }
 
 .majlis-name-wrapper.active + .majlis-details {
-    padding-bottom: 5px; /* Adjusted as per your original change */
+    padding-bottom: 5px;
 }
 
-/* Details and Preacher Info */
+/* التفاصيل ومعلومات الخطيب */
 .details-item {
     background-color: #e9ecef;
     border-radius: 35px;
@@ -266,7 +265,7 @@ body {
     gap: 5px;
 }
 
-/* Speaker Details */
+/* تفاصيل الخطيب */
 .speaker-details {
     background-color: #ffffff;
     border-radius: 30px;
@@ -299,7 +298,7 @@ body {
     padding: 10px 15px;
 }
 
-/* Exception */
+/* حالة خاصة */
 .speaker-schedule-400 .speaker-schedule-item {
     font-family: 'Abar Low Regular', sans-serif;
 }
@@ -324,7 +323,7 @@ body {
     font-weight: bold;
 }
 
-/* Footer and Pagination */
+/* التذييل والتنقل بين الصفحات */
 .footer-signature {
     margin-top: 40px;
     text-align: center;
@@ -405,7 +404,7 @@ body {
     background-color: #ddd;
 }
 
-/* Animations */
+/* الرسوم المتحركة */
 @keyframes pulse {
     0% {
         transform: scale(1);
@@ -418,13 +417,8 @@ body {
     }
 }
 
-/* Media Queries */
+/* استعلامات الوسائط (Media Queries) */
 @media (max-width: 600px) {
-    /* ... كود آخر ... */
-    .signature-logo {
-        max-width: 100px;
-    }
-}
     body {
         padding: 10px;
     }
@@ -508,5 +502,10 @@ body {
         height: 40px;
         padding: 0;
         width: 40px;
+    }
+
+    /* تعديل حجم الشعار على الجوال */
+    .signature-logo {
+        max-width: 150px;
     }
 }
